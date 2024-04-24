@@ -10,7 +10,7 @@ from django.urls import reverse
 
 @login_required(login_url='/login')
 def show_main(request):
-    return render(request, "base.html")
+    return render(request, "main.html")
 
 
 def register(request):

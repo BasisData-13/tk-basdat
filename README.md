@@ -8,5 +8,10 @@ Anggota Kelompok :
 # How to Run
 Sebelum memulai proyek, jangan lupa untuk melakukan instalasi terhadap _requirements_ dengan menggunakan `pip install -r requirements.txt`. Nyalakan _virtual environment_ dengan `python -m venv env` lalu buka dua terminal di mana salah satu terminal menjalankan perintah `python manage.py tailwind start` dan terminal satu lagi menjalankan `python manage.py runserver` untuk menjalankan server lokal.
 
+# Superuser Credentials
+- Username: Basdat13
+- Email: vinjupt@gmail.com
+- Password: LulusBasdat13
+
 # Referensi
 - https://django-tailwind.readthedocs.io/en/latest/installation.html

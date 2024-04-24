@@ -7,29 +7,10 @@
 {% block content %}  
 
 <div class = "login flex justify-center items-center flex-col">
-    
-    <!-- <h1>Register</h1>  
-
-        <form method="POST" >  
-            {% csrf_token %}  
-            <table>  
-                {{ form.as_table }}  
-                <tr>  
-                    <td></td>
-                    <td><input type="submit" name="submit" value="Daftar"/></td>  
-                </tr>  
-            </table>  
-        </form>
-
-    {% if messages %}  
-        <ul>   
-            {% for message in messages %}  
-                <li>{{ message }}</li>  
-                {% endfor %}  
-        </ul>   
-    {% endif %} -->
 
     <form class="mt-2 max-w-xl w-full bg-gray-100 p-5 rounded-lg dark:bg-gray-800 dark:border-gray-700" method="POST" action="">
+
+        {% csrf_token %}
         <div class="flex flex-col">
             {% for field in form %}
             <div>
@@ -63,11 +44,6 @@
         </div>
 
     </form>
-
-    {% csrf_token %}
-
-
-    
 
 </div>  
 

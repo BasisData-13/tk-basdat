@@ -7,7 +7,7 @@
 {% block content %}
 <div class = "login flex justify-center items-center flex-col mt-[40px]">
     
-    <h1 class="max-w-md w-full text-xl"><strong>Login</strong></h1>
+    <h1 class="max-w-md w-full text-xl text-white"><strong>Login</strong></h1>
 
     <form class="mt-2 max-w-md w-full bg-gray-100 p-5 rounded-lg dark:bg-gray-800 dark:border-gray-700" method="POST" action="">
 
@@ -30,7 +30,7 @@
     </form>
 
     {% if messages %}
-        <ul>
+        <ul class="text-white mt-1">
             {% for message in messages %}
                 <li><strong>{{ message }}</strong></li>
             {% endfor %}

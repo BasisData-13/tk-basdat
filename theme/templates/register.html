@@ -1,14 +1,12 @@
 {% extends 'base.html' %}
-{% load static tailwind_tags %}
 
 {% block meta %}
     <title>Register</title>
 {% endblock meta %}
 
 {% block content %}  
-{% tailwind_css %}
 
-<div class = "login">
+<div class = "login flex justify-center items-center flex-col">
     
     <!-- <h1>Register</h1>  
 
@@ -31,10 +29,45 @@
         </ul>   
     {% endif %} -->
 
-    <a href="#" class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Noteworthy technology acquisitions 2021</h5>
-        <p class="font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>
-    </a>
+    <form class="mt-2 max-w-xl w-full bg-gray-100 p-5 rounded-lg dark:bg-gray-800 dark:border-gray-700" method="POST" action="">
+        <div class="flex flex-col">
+            {% for field in form %}
+            <div>
+
+                <label class="block text-white font-bold mb-2" for="{{ field.id_for_label }}">
+                {{ field.label }}
+                </label>
+
+                <div>{{ field }}</div>
+
+                {% if field.help_text %}
+                <small class="text-gray-500">{{ field.help_text }}</small>
+                {% endif %}
+
+                {% for error in field.errors %}
+                <p class="text-red-500 text-sm">{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="mt-6">
+            <button
+                type="submit"
+                name="submit"
+                value="Daftar"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+                Daftar
+            </button>
+        </div>
+
+    </form>
+
+    {% csrf_token %}
+
+
+    
 
 </div>  
 

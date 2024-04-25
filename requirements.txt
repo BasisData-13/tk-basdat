@@ -6,3 +6,5 @@ requests
 urllib3
 django-browser-reload
 django-tailwind
+django-environ
+psycopg2

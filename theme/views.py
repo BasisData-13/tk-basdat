@@ -47,3 +47,12 @@ def logout_user(request):
     response = HttpResponseRedirect(reverse('theme:login'))
     response.delete_cookie('last_login')
     return response
+
+def show_crud_album_song(request):
+    return render(request, "crud_album_song.html")
+
+def show_r_cek_royalti(request):
+    return render(request, "r_cek_royalti.html")
+
+def show_rd_kelola_album_song(request):
+    return render(request, "rd_kelola_album_song.html")

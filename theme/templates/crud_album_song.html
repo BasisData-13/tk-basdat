@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+    <title>CRUD Kelola Album & Lagu</title>
+{% endblock meta %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Kelola Album & Lagu</title>
+    <!-- Include Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+
+    <!-- Create Album Form -->
+    <div class="container mx-auto my-8">
+        <h2 class="text-2xl font-bold mb-4">CREATE ALBUM</h2>
+        <form>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2" for="albumTitle">Judul:</label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="albumTitle" type="text" placeholder="Judul Album">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2" for="albumLabel">Label:</label>
+                <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="albumLabel">
+                    <option>Label 1</option>
+                    <option>Label 2</option>
+                    <option>Label 3</option>
+                </select>
+            </div>
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                SUBMIT
+            </button>
+        </form>
+    </div>
+
+    <!-- List Album Table -->
+    <div class="container mx-auto text-center">
+        <table class="min-w-full border border-gray-300">
+            <thead>
+                <tr>
+                    <th colspan="5" class="text-center border-b border-gray-300 bg-gray-200 px-4 py-2">LIST ALBUM</th>
+                <tr>
+                <tr>
+                    <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Judul</th>
+                    <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Label</th>
+                    <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Jumlah Lagu</th>
+                    <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Total Durasi</th>
+                    <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="bg-gray-600">
+                    <td class="border border-gray-300 px-4 py-2">Album 1</td>
+                    <td class="border border-gray-300 px-4 py-2">Label A</td>
+                    <td class="border border-gray-300 px-4 py-2">0</td>
+                    <td class="border border-gray-300 px-4 py-2">0 menit</td>
+                    <td class="border border-gray-300 px-4 py-2">
+                        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                            Lihat Daftar Lagu
+                        </button>
+                        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                            Tambah Lagu
+                        </button>
+                        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                            Hapus
+                        </button>
+                    </td>
+                </tr>
+                <tr class="bg-gray-600">
+                    <td class="border border-gray-300 px-4 py-2">Album 2</td>
+                    <td class="border border-gray-300 px-4 py-2">Label B</td>
+                    <td class="border border-gray-300 px-4 py-2">0</td>
+                    <td class="border border-gray-300 px-4 py-2">0 menit</td>
+                    <td class="border border-gray-300 px-4 py-2">
+                        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                            Lihat Daftar Lagu
+                        </button>
+                        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                            Tambah Lagu
+                        </button>
+                        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                            Hapus
+                        </button>
+                    </td>
+                </tr>
+                <!-- More Album Rows -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Create Lagu Form -->
+    <div class="container mx-auto my-8">
+        <h2 class="text-2xl font-bold mb-4">CREATE LAGU</h2>
+        <form>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2" for="albumSelection">Album:</label>
+                <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="albumSelection">
+                    <option>Album 1</option>
+                    <option>Album 2</option>
+                    <option>Album 3</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2" for="songTitle">Judul:</label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="songTitle" type="text" placeholder="Judul Lagu">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2" for="songArtist">Artist:</label>
+                <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="songArtist">
+                    <option>Artist 1</option>
+                    <option>Artist 2</option>
+                    <option>Artist 3</option>
+                </select>
+            </div>
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                SUBMIT
+            </button>
+        </form>
+    </div>
+
+    <!-- Daftar Lagu Table -->
+    <div class="container mx-auto text-center">
+        <table class="min-w-full border border-gray-300">
+            <thead>
+                <tr>
+                    <th colspan="5" class="text-center border-b border-gray-300 bg-gray-200 px-4 py-2">DAFTAR LAGU PADA ALBUM 1</th>
+                <tr>
+                    <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Judul</th>
+                    <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Durasi</th>
+                    <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Total Play</th>
+                    <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Total Download</th>
+                    <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="bg-gray-200">
+                    <td class="border border-gray-300 bg-gray-600 px-4 py-2">Lagu 1</td>
+                    <td class="border border-gray-300 bg-gray-600 px-4 py-2">2 menit</td>
+                    <td class="border border-gray-300 bg-gray-600 px-4 py-2">3</td>
+                    <td class="border border-gray-300 bg-gray-600 px-4 py-2">0</td>
+                    <td class="border border-gray-300 bg-gray-600 px-4 py-2">
+                        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                            Lihat Detail
+                        </button>
+                        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                            Hapus
+                        </button>
+                    </td>
+                </tr>
+                <!-- More Song Rows -->
+            </tbody>
+        </table>
+    </div>
+
+</body>
+
+</html>
+{% endblock content %}

@@ -90,15 +90,15 @@ env = environ.Env()
 environ.Env.read_env()
 
 # Your secret key
-SECRET_KEY = env("SECRET_KEY")
+SECRET_KEY = "SECRET_KEY"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': env("DB_NAME"),
-        'USER': env("DB_USER"),
-        'PASSWORD': env("DB_PASSWORD"),
-        'HOST': env("DB_HOST"),
-        'PORT': env("DB_PORT"),
+        'NAME': "tk-basdat",
+        'USER': "postgres",
+        'PASSWORD': "Hello123",
+        'HOST': "127.0.0.1",
+        'PORT': "5432"
     }
 }
 

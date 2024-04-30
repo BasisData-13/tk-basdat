@@ -1,19 +1,21 @@
 import datetime
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from django import forms
 from django.contrib import messages  
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-
+    
 
 @login_required(login_url='/login')
 def show_main(request):
     return render(request, "main.html")
 
 
-def register(request):
+def register_pengguna(request):
     form = UserCreationForm()
 
     if request.method == "POST":
@@ -23,7 +25,22 @@ def register(request):
             messages.success(request, 'Your account has been successfully created!')
             return redirect('theme:login')
     context = {'form':form}
-    return render(request, 'register.html', context)
+    return render(request, 'cru_registrasi/register_pengguna.html', context)
+
+def register_label(request):
+    form = UserCreationForm()
+
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your account has been successfully created!')
+            return redirect('theme:login')
+    context = {'form':form}
+    return render(request, 'cru_registrasi/register_label.html', context)
+
+def register_main(request):
+    return render(request, 'cru_registrasi/main.html')
 
 
 def login_user(request):

@@ -89,3 +89,6 @@ def show_cr_langganan_paket_main(request):
 
 def show_cr_langganan_paket_pembayaran_paket(request):
     return render(request, 'cr_langganan_paket/pembayaran_paket.html')
+
+def show_cr_langganan_paket_riwayat_transaksi(request):
+    return render(request, 'cr_langganan_paket/riwayat_transaksi.html')

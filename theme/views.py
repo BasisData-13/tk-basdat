@@ -69,3 +69,13 @@ def show_crud_kelola_playlist_tambah_lagu(request):
 
 def show_crud_kelola_playlist_tambah_playlist(request):
     return render(request, "crud_kelola_playlist/form_tambah_playlist.html")
+
+# R Play Song
+def show_r_play_song_main(request):
+    return render(request, "r_play_song/main.html")
+
+def show_r_play_song_tambah_playlist(request):
+    return render(request, "r_play_song/form_tambah_playlist.html")
+
+def show_r_play_song_download_lagu(request):
+    return render(request, 'r_play_song/download_lagu.html')

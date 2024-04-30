@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chart List</title>
+    <!-- Include Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+
+<div class="container mx-auto my-8">
+    <div id="chartList" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <h2 class="block text-gray-700 text-xl font-bold mb-2">CHART LIST</h2>
+        <button onclick="goBack()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Kembali
+        </button>
+        <table class="table-auto w-full mt-4">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="px-4 py-2 text-left">Tipe</th>
+                    <th class="px-4 py-2 text-left">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="bg-gray-100">
+                    <td class="border px-4 py-2">Daily Top 20</td>
+                    <td class="border px-4 py-2">
+                        <button onclick="viewChart('Daily Top 20')" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                            Lihat Daftar Lagu
+                        </button>
+                    </td>
+                </tr>
+                <tr class="bg-gray-100">
+                    <td class="border px-4 py-2">Weekly Top 20</td>
+                    <td class="border px-4 py-2">
+                        <button onclick="viewChart('Weekly Top 20')" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                            Lihat Daftar Lagu
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+<div class="container mx-auto my-8">
+    <div id="chartDetail" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <h2 class="block text-gray-700 text-xl font-bold mb-2">CHART DETAIL</h2>
+        <button onclick="hideDetail()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Kembali
+        </button>
+        <div id="chartInfo" class="mt-4">
+            <table class="table-auto w-full">
+                <thead>
+                    <tr class="bg-gray-200">
+                        <th class="px-4 py-2 text-left">Judul Lagu</th>
+                        <th class="px-4 py-2 text-left">Artis</th>
+                        <th class="px-4 py-2 text-left">Tanggal Rilis</th>
+                        <th class="px-4 py-2 text-left">Total Plays</th>
+                        <th class="px-4 py-2 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="bg-gray-100">
+                        <td class="border px-4 py-2">Lagu1</td>
+                        <td class="border px-4 py-2">Artis1</td>
+                        <td class="border px-4 py-2">18/03/24</td>
+                        <td class="border px-4 py-2">1000</td>
+                        <td class="border px-4 py-2">
+                            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                Lihat
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="bg-gray-100">
+                        <td class="border px-4 py-2">Lagu2</td>
+                        <td class="border px-4 py-2">Artis2</td>
+                        <td class="border px-4 py-2">18/03/24</td>
+                        <td class="border px-4 py-2">900</td>
+                        <td class="border px-4 py-2">
+                            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                Lihat
+                            </button>
+                        </td>
+                    </tr>   
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function goBack() {
+        window.history.back();
+    }
+
+    function viewChart(chartType) {
+        document.getElementById('chartList').style.display = 'none';
+        document.getElementById('chartDetail').style.display = 'block';
+    }
+
+    function hideDetail() {
+        document.getElementById('chartList').style.display = 'block';
+        document.getElementById('chartDetail').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>

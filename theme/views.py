@@ -47,3 +47,12 @@ def logout_user(request):
     response = HttpResponseRedirect(reverse('theme:login'))
     response.delete_cookie('last_login')
     return response
+
+def show_r_play_podcast(request):
+    return render(request, "r_play_podcast.html")
+
+def show_ru_melihat_chart(request):
+    return render(request, "ru_melihat_chart.html")
+
+def show_crud_kelola_podcast(request):
+    return render(request, "crud_kelola_podcast.html")

@@ -22,5 +22,7 @@ urlpatterns = [
     path('cr_langganan_paket_main', show_cr_langganan_paket_main, name='cr_langganan_paket_main'),
     path('cr_langganan_paket_pembayaran_paket', show_cr_langganan_paket_pembayaran_paket, name='cr_langganan_paket_pembayaran_paket'),
     path('cr_langganan_paket_riwayat_transaksi', show_cr_langganan_paket_riwayat_transaksi, name='cr_langganan_paket_riwayat_transaksi'),
-    path('r_play_playlist_main', show_r_play_playlist, name='r_play_playlist_main')
+    path('r_play_playlist_main', show_r_play_playlist, name='r_play_playlist_main'),
+    path('rd_downloaded_songs_main', show_rd_downloaded_songs_main, name='rd_downloaded_songs_main'),
+    path('rd_downloaded_songs_berhasil_hapus', show_rd_downloaded_songs_berhasil_hapus, name='rd_downloaded_songs_berhasil_hapus')
 ]

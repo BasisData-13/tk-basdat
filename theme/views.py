@@ -82,3 +82,10 @@ def show_r_play_song_download_lagu(request):
 
 def show_r_play_song_tambah_lagu_clear(request):
     return render(request, 'r_play_song/tambah_lagu_clear.html')
+
+# CR Langganan 
+def show_cr_langganan_paket_main(request):
+    return render(request, 'cr_langganan_paket/main.html')
+
+def show_cr_langganan_paket_pembayaran_paket(request):
+    return render(request, 'cr_langganan_paket/pembayaran_paket.html')

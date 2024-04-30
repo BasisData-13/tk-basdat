@@ -79,3 +79,6 @@ def show_r_play_song_tambah_playlist(request):
 
 def show_r_play_song_download_lagu(request):
     return render(request, 'r_play_song/download_lagu.html')
+
+def show_r_play_song_tambah_lagu_clear(request):
+    return render(request, 'r_play_song/tambah_lagu_clear.html')

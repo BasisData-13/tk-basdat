@@ -1,3 +1,5 @@
+{% extends 'base.html' %}
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +9,7 @@
     <!-- Include Tailwind CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-800">
 
 <div class="max-w-4xl mx-auto px-4 py-8">
     <div class="bg-white shadow rounded-lg p-6 mb-6">
@@ -18,7 +20,9 @@
         <p><strong>Total Durasi:</strong> 8 jam 20 menit</p>
         <p><strong>Tanggal Rilis:</strong> 18/03/24</p>
         <p><strong>Tahun:</strong> 2024</p>
+        <div class="flex justify-center mt-4">
         <button onclick="goBack()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Kembali</button>
+    </div>
     </div>
 
     <div class="bg-white shadow rounded-lg p-6">
@@ -58,3 +62,4 @@
 
 </body>
 </html>
+{% endblock content %}

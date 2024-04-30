@@ -57,8 +57,15 @@ def show_r_cek_royalti(request):
 def show_rd_kelola_album_song(request):
     return render(request, "rd_kelola_album_song.html")
 
+# CRUD Kelola User Playlist
 def show_crud_kelola_playlist_main(request):
     return render(request, "crud_kelola_playlist/main.html")
 
 def show_crud_kelola_playlist_detail(request):
     return render(request, "crud_kelola_playlist/detail.html")
+
+def show_crud_kelola_playlist_tambah_lagu(request):
+    return render(request, "crud_kelola_playlist/form_tambah_lagu.html")
+
+def show_crud_kelola_playlist_tambah_playlist(request):
+    return render(request, "crud_kelola_playlist/form_tambah_playlist.html")

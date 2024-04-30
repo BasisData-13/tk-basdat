@@ -12,5 +12,7 @@ urlpatterns = [
     path('r_cek_royalti/', show_r_cek_royalti, name='r_cek_royalti'),
     path('rd_kelola_album_song/', show_rd_kelola_album_song, name='rd_kelola_album_song'),
     path('crud_kelola_playlist_main/', show_crud_kelola_playlist_main, name='crud_kelola_playlist_main'),
-    path('/crud_kelola_playlist_detail/', show_crud_kelola_playlist_detail, name='crud_kelola_playlist_detail')
+    path('crud_kelola_playlist_detail/', show_crud_kelola_playlist_detail, name='crud_kelola_playlist_detail'),
+    path('crud_kelola_playlist_tambah_lagu', show_crud_kelola_playlist_tambah_lagu, name='crud_kelola_playlist_tambah_lagu'),
+    path('crud_kelola_playlist_tambah_playlist', show_crud_kelola_playlist_tambah_playlist, name='crud_kelola_playlist_tambah_playlist'),
 ]

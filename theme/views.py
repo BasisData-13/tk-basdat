@@ -120,3 +120,7 @@ def show_rd_downloaded_songs_main(request):
 
 def show_rd_downloaded_songs_berhasil_hapus(request):
     return render(request, 'rd_downloaded_songs/berhasil_hapus.html')
+
+# Dashboard
+def show_dashboard(request):
+    return render(request, 'dashboard.html')

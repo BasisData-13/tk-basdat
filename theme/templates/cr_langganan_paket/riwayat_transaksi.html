@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+    <title>Riwayat Transaksi</title>
+{% endblock meta %}
+
+{% block content %}
+
+<body class="bg-gray-100">
+
+    <!-- List Album Table -->
+    <div class="container mx-auto my-8 flex items-center justify-center flex-col">
+        <table class="min-w-full border border-gray-300">
+            <thead>
+                <tr> 
+                    <th colspan="5" class="text-center border-b border-gray-300 bg-gray-100 px-4 py-2">
+                        Riwayat Transaksi Paket
+                    </th>
+                    <tr>
+                        <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Jenis</th>
+                        <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Tanggal Dimulai</th>
+                        <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Tanggal Berakhir</th>
+                        <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Metode Pembayaran</th>
+                        <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Nominal</th>
+                    </tr>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    
+
+</body>
+{% endblock content %}

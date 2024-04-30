@@ -13,6 +13,7 @@ module.exports = {
 
         /*  Templates within theme app (<tailwind_app_name>/templates), e.g. base.html. */
         '../templates/**/*.html',
+        './node_modules/flowbite/**/*.js',
 
         /*
          * Main templates directory of the project (BASE_DIR/templates).
@@ -53,5 +54,6 @@ module.exports = {
         require('@tailwindcss/forms'),
         require('@tailwindcss/typography'),
         require('@tailwindcss/aspect-ratio'),
+        require('flowbite/plugin')
     ],
 }

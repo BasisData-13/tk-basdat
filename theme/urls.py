@@ -5,7 +5,9 @@ app_name = 'theme'
 
 urlpatterns = [
     path('', show_main, name='show_main'),
-    path('register/', register, name='register'),
+    path('register/', register_main, name='register'),
+    path('register_pengguna', register_pengguna, name='register_pengguna'),
+    path('register_label', register_label, name='register_label'),
     path('login/', login_user, name='login'),
     path('logout/', logout_user, name='logout'),
     path('crud_album_song/', show_crud_album_song, name='crud_album_song'),

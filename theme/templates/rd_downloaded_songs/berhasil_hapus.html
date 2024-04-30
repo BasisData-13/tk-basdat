@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+    <title>Berhasil Hapus Downloaded Songs</title>
+{% endblock meta %}
+
+{% block content %}
+
+<body class="bg-gray-100">
+
+    <!-- List Album Table -->
+    <div class="container mx-auto my-8 flex items-center justify-center flex-col">
+        <table class="min-w-full border border-gray-300">
+            <thead>
+                <tr> 
+                    <th colspan="5" class="text-center border-b border-gray-300 bg-gray-100 px-4 py-2">
+                        Berhasil menghapus Lagu dengan judul "Song1" dari daftar unduhan!
+                        <div class="mt-2">
+                            <a href="{% url 'theme:rd_downloaded_songs_main' %}">
+                                <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                                    KEMBALI
+                                </button>
+                            </a>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    
+
+</body>
+{% endblock content %}

@@ -96,3 +96,10 @@ def show_cr_langganan_paket_pembayaran_paket(request):
 
 def show_cr_langganan_paket_riwayat_transaksi(request):
     return render(request, 'cr_langganan_paket/riwayat_transaksi.html')
+
+# RD Downloaded Songs
+def show_rd_downloaded_songs_main(request):
+    return render(request, 'rd_downloaded_songs/main.html')
+
+def show_rd_downloaded_songs_berhasil_hapus(request):
+    return render(request, 'rd_downloaded_songs/berhasil_hapus.html')

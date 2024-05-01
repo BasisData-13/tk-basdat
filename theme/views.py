@@ -124,3 +124,16 @@ def show_rd_downloaded_songs_berhasil_hapus(request):
 # Dashboard
 def show_dashboard(request):
     return render(request, 'dashboard.html')
+
+# fitur biru
+def show_r_play_podcast(request):
+    return render(request, "r_play_podcast.html")
+
+def show_ru_melihat_chart(request):
+    return render(request, "ru_melihat_chart/main.html")
+
+def show_ru_melihat_chart_detail(request):
+    return render(request, 'ru_melihat_chart/detail.html')
+
+def show_crud_kelola_podcast(request):
+    return render(request, "crud_kelola_podcast.html")

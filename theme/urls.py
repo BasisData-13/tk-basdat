@@ -27,5 +27,9 @@ urlpatterns = [
     path('r_play_playlist_main', show_r_play_playlist, name='r_play_playlist_main'),
     path('rd_downloaded_songs_main', show_rd_downloaded_songs_main, name='rd_downloaded_songs_main'),
     path('rd_downloaded_songs_berhasil_hapus', show_rd_downloaded_songs_berhasil_hapus, name='rd_downloaded_songs_berhasil_hapus'),
-    path('dashboard', show_dashboard, name='dashboard')
+    path('dashboard', show_dashboard, name='dashboard'),
+    path('r_play_podcast', show_r_play_podcast, name='r_play_podcast'),
+    path('ru_melihat_chart', show_ru_melihat_chart, name='ru_melihat_chart'),
+    path('ru_melihat_chart_detail', show_ru_melihat_chart_detail, name='ru_melihat_chart_detail'),
+    path('crud_kelola_podcast', show_crud_kelola_podcast, name='crud_kelola_podcast')
 ]

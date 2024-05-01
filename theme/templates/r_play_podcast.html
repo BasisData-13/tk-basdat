@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+    <title>Play Podcast</title>
+{% endblock meta %}
+
+{% block content %}
+
+    <body class="bg-gray-800">
+
+        <div class="max-w-4xl mx-auto px-4 py-8">
+            <div class="bg-white shadow rounded-lg p-6 mb-6">
+                <h2 class="text-2xl font-bold mb-4">PODCAST DETAIL</h2>
+                <p><strong>Judul:</strong> Podcast1</p>
+                <p><strong>Genre(s):</strong> Genre1, Genre2</p>
+                <p><strong>Podcaster:</strong> Artist1</p>
+                <p><strong>Total Durasi:</strong> 8 jam 20 menit</p>
+                <p><strong>Tanggal Rilis:</strong> 18/03/24</p>
+                <p><strong>Tahun:</strong> 2024</p>
+                
+                <div class="flex justify-center mt-4">
+                    <a href="{% url 'theme:show_main' %}">
+                        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                            Kembali
+                        </button>
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-xl font-bold mb-4">DAFTAR EPISODE</h3>
+                <table class="min-w-full border-collapse">
+                    <thead>
+                        <tr>
+                            <th class="border-b-2 border-gray-300 p-4 text-left text-lg leading-4 font-medium text-gray-500 uppercase">Judul Episode</th>
+                            <th class="border-b-2 border-gray-300 p-4 text-left text-lg leading-4 font-medium text-gray-500 uppercase">Deskripsi</th>
+                            <th class="border-b-2 border-gray-300 p-4 text-left text-lg leading-4 font-medium text-gray-500 uppercase">Durasi</th>
+                            <th class="border-b-2 border-gray-300 p-4 text-left text-lg leading-4 font-medium text-gray-500 uppercase">Tanggal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-gray-100">
+                            <td class="px-4 py-4 border-b border-gray-300">SubJudul1</td>
+                            <td class="px-4 py-4 border-b border-gray-300">Lorem Ipsum dulur si amet</td>
+                            <td class="px-4 py-4 border-b border-gray-300">59 menit</td>
+                            <td class="px-4 py-4 border-b border-gray-300">18/03/2024</td>
+                        </tr>
+                        <tr class="bg-gray-100">
+                            <td class="px-4 py-4 border-b border-gray-300">SubJudul2</td>
+                            <td class="px-4 py-4 border-b border-gray-300">Lorem Ipsum dulur si amet</td>
+                            <td class="px-4 py-4 border-b border-gray-300">1 jam 2 menit</td>
+                            <td class="px-4 py-4 border-b border-gray-300">25/03/2024</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </body>
+
+{% endblock content %}

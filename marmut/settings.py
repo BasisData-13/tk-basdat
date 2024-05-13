@@ -94,11 +94,11 @@ SECRET_KEY = "SECRET_KEY"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': env("DB_NAME"),
-        'USER': env("DB_USER"),
-        'PASSWORD': env("DB_PASSWORD"),
-        'HOST': env("DB_HOST"),
-        'PORT': env("DB_PORT")
+        'NAME': "postgres",
+        'USER': "postgres.skkgdwhflufmcobarrea",
+        'PASSWORD': "kelompok13basdat",
+        'HOST': "aws-0-us-west-1.pooler.supabase.com",
+        'PORT': "5432"
     }
 }
 

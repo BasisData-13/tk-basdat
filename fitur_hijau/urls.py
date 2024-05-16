@@ -8,7 +8,7 @@ urlpatterns = [
     path('crud_kelola_playlist_main/', kelola_user_playlist_main, name='crud_kelola_playlist_main'),
     path('crud_kelola_playlist_detail/', show_crud_kelola_playlist_detail, name='crud_kelola_playlist_detail'),
     path('crud_kelola_playlist_tambah_lagu', tambah_lagu, name='crud_kelola_playlist_tambah_lagu'),
-    path('crud_kelola_playlist_tambah_playlist', show_crud_kelola_playlist_tambah_playlist, name='crud_kelola_playlist_tambah_playlist'),
+    path('crud_kelola_playlist_tambah_playlist', tambah_playlist, name='crud_kelola_playlist_tambah_playlist'),
 
     # R PLAY SONG
     path('r_play_song_main', show_r_play_song_main, name='r_play_song_main'),

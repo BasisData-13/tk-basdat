@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.db import connection
 
 # CRUD Kelola User Playlist
@@ -18,12 +18,25 @@ def kelola_user_playlist_main(request):
 def tambah_lagu(request):
     return render(request, 'crud_kelola_playlist/form_tambah_lagu.html')
 
+def tambah_playlist(request):
+    if request.method == 'POST':
+        judul = request.POST.get('judul')
+        deskripsi = request.POST.get('deskripsi')
+
+        cursor = connection.cursor()
+        cursor.execute(
+            """
+            SET search_path to MARMUT;
+            INSERT INTO USER_PLAYLIST(judul, deskripsi)
+            VALUES (%s, %s)
+            """, (judul, deskripsi)
+        )
+        return redirect('fitur_hijau:')
+
+    return render(request, "crud_kelola_playlist/form_tambah_playlist.html")
 
 def show_crud_kelola_playlist_detail(request):
-    return render(request, "crud_kelola_playlist/detail.html")
-
-def show_crud_kelola_playlist_tambah_playlist(request):
-    return render(request, "crud_kelola_playlist/form_tambah_playlist.html")
+    return render(request, "crud_kelola_playlist/detail.html")    
 
 
 # R Play Song

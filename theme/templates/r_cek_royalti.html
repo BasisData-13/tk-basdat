@@ -24,20 +24,15 @@
                 </tr>
             </thead>
             <tbody>
+                {% for royalty in royalties %}
                 <tr>
-                    <td class="border border-gray-300 bg-gray-600 px-4 py-2">Song 1</td>
-                    <td class="border border-gray-300 bg-gray-600 px-4 py-2">Album 1</td>
-                    <td class="border border-gray-300 bg-gray-600 px-4 py-2">100</td>
-                    <td class="border border-gray-300 bg-gray-600 px-4 py-2">50</td>
-                    <td class="border border-gray-300 bg-gray-600 px-4 py-2">5000</td>
+                    <td class="border border-gray-300 bg-gray-600 text-white px-4 py-2">{{ royalty.0 }}</td>
+                    <td class="border border-gray-300 bg-gray-600 text-white px-4 py-2">{{ royalty.1 }}</td>
+                    <td class="border border-gray-300 bg-gray-600 text-white px-4 py-2">{{ royalty.2 }}</td>
+                    <td class="border border-gray-300 bg-gray-600 text-white px-4 py-2">{{ royalty.3 }}</td>
+                    <td class="border border-gray-300 bg-gray-600 text-white px-4 py-2">Rp.{{ royalty.4 }}</td>
                 </tr>
-                <tr>
-                    <td class="border border-gray-300 bg-gray-600 px-4 py-2">Song 2</td>
-                    <td class="border border-gray-300 bg-gray-600 px-4 py-2">Album 2</td>
-                    <td class="border border-gray-300 bg-gray-600 px-4 py-2">200</td>
-                    <td class="border border-gray-300 bg-gray-600 px-4 py-2">100</td>
-                    <td class="border border-gray-300 bg-gray-600 px-4 py-2">10000</td>
-                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>

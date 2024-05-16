@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
 
 {% block meta %}
-    <title>Form Tambah Playlist</title>
+    <title>Ubah Playlist</title>
 {% endblock meta %}
 
 {% block content %}
 
     <!-- List Album Table -->
     <div class = "flex justify-center items-center flex-col mt-[40px]">
-        <h1 class="max-w-md w-full text-xl text-white"><strong>Tambah Playlist</strong></h1>
+        <h1 class="max-w-md w-full text-xl text-white"><strong>Ubah Playlist</strong></h1>
 
-        <form class="mt-2 max-w-md w-full bg-gray-100 p-5 rounded-lg dark:bg-gray-800 dark:border-gray-700" method="POST" action="{% url 'fitur_hijau:tambah_playlist' %}">
+        <form class="mt-2 max-w-md w-full bg-gray-100 p-5 rounded-lg dark:bg-gray-800 dark:border-gray-700" method="POST" action="{% url 'fitur_hijau:ubah_playlist' playlist_id=playlist_id %}">
 
             <div class="mb-5">
                 <label class="block mb-2 text-sm font-medium text-white">Judul</label>

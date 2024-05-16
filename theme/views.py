@@ -45,11 +45,13 @@ def login_user(request):
                     response = HttpResponseRedirect(reverse("theme:landing_page"))
                     response.set_cookie('last_login', str(datetime.datetime.now()))
                     response.set_cookie('is_authenticated', 'True')
+                    response.set_cookie('user_email', email)
                     return response
             else:
                 response = HttpResponseRedirect(reverse("theme:landing_page"))
                 response.set_cookie('last_login', str(datetime.datetime.now()))
                 response.set_cookie('is_authenticated', 'True')
+                response.set_cookie('user_email', email)
                 return response
 
             messages.info(request, 'Sorry, incorrect email or password. Please try again.')

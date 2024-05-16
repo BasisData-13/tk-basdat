@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'tailwind',
     'theme',
     'django_browser_reload',
-    'fitur_hijau'
+    'fitur_hijau',
+    'fitur_merah'
 ]
 
 TAILWIND_APP_NAME = 'theme'

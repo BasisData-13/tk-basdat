@@ -1,4 +1,5 @@
 import datetime
+import random
 from django.shortcuts import render, redirect
 from django.contrib import messages  
 from django.http import HttpResponseRedirect, JsonResponse
@@ -14,45 +15,94 @@ def login_user(request):
         password = request.POST.get('password')
 
         with connection.cursor() as cursor:
+            cursor.execute("SET search_path to MARMUT;")
+            # Check AKUN table
             cursor.execute(
-                f"""
-                SET search_path to MARMUT;
+                """
                 SELECT EXISTS (
                     SELECT 1
                     FROM AKUN
-                    WHERE email = '{email}'
-                    AND password = '{password}'
-                );
-                """
+                    WHERE email = %s
+                    AND password = %s
+                )
+                """, [email, password]
             )
-            result_akun = cursor.fetchall()
+            result_akun = cursor.fetchone()
 
-            if not result_akun[0][0]:  # If AKUN table query returns false
-                # Check LABEL table
+            if result_akun and result_akun[0]:  # If AKUN table query returns true
+                # Determine role by checking related tables
+                role = None
+
+                # Check if the user is an artist
                 cursor.execute(
-                    f"""
+                    """
                     SELECT EXISTS (
                         SELECT 1
-                        FROM LABEL
-                        WHERE email = '{email}'
-                        AND password = '{password}'
-                    );
-                    """
+                        FROM artist
+                        WHERE email_akun = %s
+                    )
+                    """, [email]
                 )
-                result_label = cursor.fetchall()
+                if cursor.fetchone()[0]:
+                    role = 'artist'
 
-                if result_label[0][0]:  # If LABEL table query returns true
-                    response = HttpResponseRedirect(reverse("theme:landing_page"))
-                    response.set_cookie('last_login', str(datetime.datetime.now()))
-                    response.set_cookie('is_authenticated', 'True')
-                    response.set_cookie('user_email', email)
-                    return response
-            else:
+                # Check if the user is a songwriter
+                cursor.execute(
+                    """
+                    SELECT EXISTS (
+                        SELECT 1
+                        FROM songwriter
+                        WHERE email_akun = %s
+                    )
+                    """, [email]
+                )
+                if cursor.fetchone()[0]:
+                    role = 'songwriter'
+
+                # Check if the user is a podcaster
+                cursor.execute(
+                    """
+                    SELECT EXISTS (
+                        SELECT 1
+                        FROM podcaster
+                        WHERE email_akun = %s
+                    )
+                    """, [email]
+                )
+                if cursor.fetchone()[0]:
+                    role = 'podcaster'
+
+                # Default to 'user' if no specific role found
+                if not role:
+                    role = 'user'
+
                 response = HttpResponseRedirect(reverse("theme:landing_page"))
                 response.set_cookie('last_login', str(datetime.datetime.now()))
                 response.set_cookie('is_authenticated', 'True')
                 response.set_cookie('user_email', email)
+                response.set_cookie('user_role', role)
                 return response
+            else:
+                # Check LABEL table
+                cursor.execute(
+                    """
+                    SELECT EXISTS (
+                        SELECT 1
+                        FROM LABEL
+                        WHERE email = %s
+                        AND password = %s
+                    )
+                    """, [email, password]
+                )
+                result_label = cursor.fetchone()
+
+                if result_label and result_label[0]:  # If LABEL table query returns true
+                    response = HttpResponseRedirect(reverse("theme:landing_page"))
+                    response.set_cookie('last_login', str(datetime.datetime.now()))
+                    response.set_cookie('is_authenticated', 'True')
+                    response.set_cookie('user_email', email)
+                    response.set_cookie('user_role', 'label')
+                    return response
 
             messages.info(request, 'Sorry, incorrect email or password. Please try again.')
 
@@ -70,10 +120,12 @@ def register_pengguna(request):
         kota_asal = request.POST.get('kota_asal')
 
         # periksa role dan tentukan isVerified
-        podcaster = request.POST.get('podcaster')
-        artist = request.POST.get('artist')
-        songwriter = request.POST.get('songwriter')
-        if podcaster or artist or songwriter:
+        roles = request.POST.getlist('roles')
+        is_podcaster = 'podcaster' in roles
+        is_artist = 'artist' in roles
+        is_songwriter = 'songwriter' in roles
+        
+        if is_podcaster or is_artist or is_songwriter:
             is_verified = 'True'
         else:
             is_verified = 'False'
@@ -88,10 +140,6 @@ def register_pengguna(request):
                 """, (email, password, nama, gender, tempat_lahir, tanggal_lahir, kota_asal, is_verified)
             )
 
-            is_podcaster = 'podcaster' in request.POST
-            is_artist = 'artist' in request.POST
-            is_songwriter = 'songwriter' in request.POST
-
             if is_podcaster:
                 cursor.execute(
                     """
@@ -100,21 +148,45 @@ def register_pengguna(request):
                     VALUES (%s)
                     """, (email)
                 )
+                
             if is_artist:
+                uuid_artist = str(uuid.uuid4())
+                uuid_hak_cipta = str(uuid.uuid4())
+                rate_royalti = random.randint(1, 11) 
                 cursor.execute(
                     """
                     SET search_path to MARMUT;
-                    INSERT INTO ARTIST(email)
-                    VALUES (%s)
-                    """, (email)
+                    INSERT INTO PEMILIK_HAK_CIPTA
+                    VALUES (%s, %s)
+                    """, (uuid_hak_cipta, rate_royalti)
                 )
-            if is_songwriter:
                 cursor.execute(
                     """
                     SET search_path to MARMUT;
-                    INSERT INTO SONGWRITER(email)
-                    VALUES (%s)
-                    """, (email)
+                    INSERT INTO ARTIST
+                    VALUES (%s,%s,%s)
+                    """, (uuid_artist,email,uuid_hak_cipta)
+                )
+                
+            if is_songwriter:
+                uuid_songwriter = str(uuid.uuid4())
+                uuid_hak_cipta = str(uuid.uuid4())
+                rate_royalti = random.randint(1, 11)
+                
+                cursor.execute(
+                    """
+                    SET search_path to MARMUT;
+                    INSERT INTO PEMILIK_HAK_CIPTA
+                    VALUES (%s, %s)
+                    """, (uuid_hak_cipta, rate_royalti)
+                )
+                
+                cursor.execute(
+                    """
+                    SET search_path to MARMUT;
+                    INSERT INTO SONGWRITER
+                    VALUES (%s,%s,%s)
+                    """, (uuid_songwriter,email,uuid_hak_cipta)
                 )
 
             messages.success(request, 'Your account has been successfully created!')
@@ -132,16 +204,26 @@ def register_label(request):
         kontak = request.POST.get('kontak')
 
         # random generate id
-        id = uuid.uuid4()
+        uuid_hak_cipta = str(uuid.uuid4())
+        uuid_label = str(uuid.uuid4())
+        rate_royalti = random.randint(1, 11)
 
         cursor = connection.cursor()
         try:
             cursor.execute(
                 """
                 SET search_path to MARMUT;
-                INSERT INTO LABEL(id, nama, email, password, kontak)
-                VALUES (%s, %s, %s, %s, %s)
-                """, (id, email, password, nama, kontak)
+                INSERT INTO PEMILIK_HAK_CIPTA
+                VALUES (%s, %s)
+                """, (uuid_hak_cipta, rate_royalti)
+            )
+            
+            cursor.execute(
+                """
+                SET search_path to MARMUT;
+                INSERT INTO LABEL(id, nama, email, password, kontak, id_pemilik_hak_cipta)
+                VALUES (%s, %s, %s, %s, %s, %s)
+                """, (uuid_label, email, password, nama, kontak, uuid_hak_cipta)
             )
             messages.success(request, 'Your account has been successfully created!')
             return HttpResponseRedirect(reverse('theme:login'))
@@ -164,8 +246,6 @@ def landing_page(request):
 
 def register_main(request):
     return render(request, 'authentication/cru_registrasi/main.html')
-
-
 
 
 # CR Langganan 

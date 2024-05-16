@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.db import connection
 import datetime, uuid
 
+# AUTHENTICATION
 def login_user(request):
     context = {"error": ""}
     if request.method == 'POST':
@@ -165,9 +166,7 @@ def register_main(request):
 
 
 
-
-# Fitur Merah
-
+# FITUR MERAH
 def get_all_royalti(request):
     cursor = connection.cursor()
     cursor.execute(
@@ -500,6 +499,16 @@ def show_r_cek_royalti(request):
 
 def show_rd_kelola_album_song(request):
     return render(request, "rd_kelola_album_song.html")
+
+def show_crud_album_song(request):
+    songwriters = get_songwriters(request)
+    albums = get_album(request)
+    genres = get_daftar_genre_song(request)
+    labels = get_labels(request)
+    artists = get_artists(request)
+    context = {'songwriters': songwriters, 'albums': albums, 
+               'genres': genres, 'labels': labels, 'artists': artists}
+    return render(request, "crud_album_song.html",context)
 
 # CR Langganan 
 def show_cr_langganan_paket_main(request):

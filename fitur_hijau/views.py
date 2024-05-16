@@ -1,14 +1,26 @@
 from django.shortcuts import render
+from django.db import connection
 
 # CRUD Kelola User Playlist
-def show_crud_kelola_playlist_main(request):
-    return render(request, "crud_kelola_playlist/main.html")
+def kelola_user_playlist_main(request):
+    cursor = connection.cursor()
+    cursor.execute(
+        """
+        SET search_path to MARMUT;
+        SELECT judul, jumlah_lagu, total_durasi
+        FROM USER_PLAYLIST
+        """
+    )
+
+    user_playlists = cursor.fetchall()
+    return render(request, 'crud_kelola_playlist/main.html', {'user_playlists': user_playlists})
+
+def tambah_lagu(request):
+    return render(request, 'crud_kelola_playlist/form_tambah_lagu.html')
+
 
 def show_crud_kelola_playlist_detail(request):
     return render(request, "crud_kelola_playlist/detail.html")
-
-def show_crud_kelola_playlist_tambah_lagu(request):
-    return render(request, "crud_kelola_playlist/form_tambah_lagu.html")
 
 def show_crud_kelola_playlist_tambah_playlist(request):
     return render(request, "crud_kelola_playlist/form_tambah_playlist.html")

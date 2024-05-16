@@ -1,9 +1,8 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages  
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.db import connection
 import datetime, uuid
@@ -86,6 +85,36 @@ def register_pengguna(request):
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 """, (email, password, nama, gender, tempat_lahir, tanggal_lahir, kota_asal, is_verified)
             )
+
+            is_podcaster = 'podcaster' in request.POST
+            is_artist = 'artist' in request.POST
+            is_songwriter = 'songwriter' in request.POST
+
+            if is_podcaster:
+                cursor.execute(
+                    """
+                    SET search_path to MARMUT;
+                    INSERT INTO PODCASTER(email)
+                    VALUES (%s)
+                    """, (email)
+                )
+            if is_artist:
+                cursor.execute(
+                    """
+                    SET search_path to MARMUT;
+                    INSERT INTO ARTIST(email)
+                    VALUES (%s)
+                    """, (email)
+                )
+            if is_songwriter:
+                cursor.execute(
+                    """
+                    SET search_path to MARMUT;
+                    INSERT INTO SONGWRITER(email)
+                    VALUES (%s)
+                    """, (email)
+                )
+
             messages.success(request, 'Your account has been successfully created!')
             return HttpResponseRedirect(reverse('theme:login'))
         except Exception as e:

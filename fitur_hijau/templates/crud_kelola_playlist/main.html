@@ -30,17 +30,24 @@
                         <td class="border border-gray-300 px-4 py-2">{{ playlist.1 }}</td>
                         <td class="border border-gray-300 px-4 py-2">{{ playlist.2 }} menit</td>
                         <td class="border border-gray-300 px-4 py-2">
-                            <a href="{% url 'fitur_hijau:crud_kelola_playlist_detail' %}">
+                            <a href="{% url 'fitur_hijau:detail_playlist' playlist_id=playlist.3 %}">
                                 <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
                                     Detail
                                 </button>
                             </a>
+
+                            <a href="{% url 'fitur_hijau:ubah_main' playlist_id=playlist.3 %}">
                             <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
                                 Ubah
                             </button>
-                            <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
-                                Hapus
-                            </button>
+                            </a> 
+
+                            <form action="{% url 'fitur_hijau:hapus_playlist' playlist_id=playlist.3 %}" method="POST" style="display: inline;">
+                                {% csrf_token %}
+                                <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                                    Hapus
+                                </button>
+                            </form>
                         </td>
                     </tr>
                     {% endfor %}
@@ -51,12 +58,13 @@
                 {% endif %}
             </tbody>
         </table>
-        <a href="{% url 'fitur_hijau:crud_kelola_playlist_tambah_playlist' %}">
+        <a href="{% url 'fitur_hijau:tambah_playlist' %}">
             <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-[10px]" type="button">
                 Tambah Playlist
             </button>
         </a>
     </div>
+  
     
 
 </body>

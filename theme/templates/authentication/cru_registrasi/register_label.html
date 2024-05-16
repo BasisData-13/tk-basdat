@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+    <title>Register</title>
+{% endblock meta %}
+
+{% block content %}  
+
+<div class = "login flex justify-center items-center flex-col">
+
+    <form class="mt-2 mb-2 max-w-xl w-full bg-gray-100 p-5 rounded-lg dark:bg-gray-800 dark:border-gray-700" method="POST" action="">
+
+        {% csrf_token %}
+    
+        <div>
+            <label class="block text-white font-bold mb-2" for="username">Username</label>
+            <input type="text" name="username" id="username" class="form-control bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" required placeholder="Username"/>
+        </div>
+
+        <div>
+            <label class="block text-white font-bold mb-2" for="username">Email</label>
+            <input type="text" name="email" id="username" class="form-control bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" required placeholder="Email"/>
+        </div>
+
+        <div class="mt-4">
+            <label class="block text-white font-bold mb-2">Kontak</label>
+            <input type="text" name="kontak" id="kontak" class="form-control bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" required placeholder="Kontak"/>
+        </div>
+
+    
+        <div class="mt-4">
+            <label class="block text-white font-bold mb-2" for="password">Password</label>
+            <input type="password" name="password" id="password" class="form-control bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" required placeholder="Password"/>
+        </div>
+    
+
+        <div class="mt-6">
+            <button
+                type="submit"
+                name="submit"
+                value="Daftar"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+                Daftar
+            </button>
+        </div>
+    
+    </form>
+    
+
+</div>  
+
+{% endblock content %}

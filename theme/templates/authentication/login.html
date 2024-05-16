@@ -9,12 +9,12 @@
     
     <h1 class="max-w-md w-full text-xl text-white"><strong>Login</strong></h1>
 
-    <form class="mt-2 max-w-md w-full bg-gray-100 p-5 rounded-lg dark:bg-gray-800 dark:border-gray-700" method="POST" action="">
+    <form class="mt-2 max-w-md w-full bg-gray-100 p-5 rounded-lg dark:bg-gray-800 dark:border-gray-700" method="POST" action="{% url 'theme:login' %}">
 
         {% csrf_token %}
         <div class="mb-5">
             <label class="block mb-2 text-sm font-medium text-white">Your email</label>
-            <input type="text" name="username" class="form-control bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Email" required />
+            <input type="text" name="email" id="email" class="form-control bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Email" required />
         </div>
 
         <div class="mb-5">

@@ -1,153 +1,345 @@
 {% extends 'base.html' %}
 
 {% block meta %}
-    <title>CRUD Kelola Album & Lagu</title>
+    <title>Kelola Album & Lagu</title>
 {% endblock meta %}
 
 {% block content %}
 
 <body class="bg-gray-100">
+    <!-- Modal -->
+    <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden" id="songModal" tabindex="-1" role="dialog" aria-labelledby="songModalLabel" aria-hidden="true">
+        <div class="relative w-full max-w-md bg-white rounded-lg shadow-lg">
+            <div class="flex justify-between items-center p-4 border-b border-gray-200 rounded-t">
+                <h5 class="text-lg font-bold text-gray-900" id="songModalLabel">Song Details</h5>
+                <button type="button" class="text-gray-800 font-bold" id="closeModalButton">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="relative p-4" id="songModalBody">
+                <!-- Song details will be displayed here -->
+            </div>
+            <div class="flex justify-end p-4 border-t border-gray-200">
+                <button type="button" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded" id="closeModalFooterButton">Close</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Create Album Form -->
-    <div class="container mx-auto my-8">
-        <h2 class="text-2xl font-bold mb-4 text-white">CREATE ALBUM</h2>
-        <form>
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2" for="albumTitle">Judul:</label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="albumTitle" type="text" placeholder="Judul Album">
+    <br>
+    <div class="container mx-auto my-auto p-4 bg-white shadow-md rounded">
+        <h2 class="text-2xl font-bold mb-4 text-gray-800">CREATE ALBUM</h2>
+        <!-- Create Album Form -->
+        <form action="/create_album_action/" method="post">
+            {% csrf_token %}
+            <div class="flex flex-wrap -mx-3 mb-6">
+                <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                    <label for="judul_album" class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Judul Album:</label>
+                    <input type="text" id="judul_album" name="judul_album" class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white">
+                </div>
+                <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                    <label for="label" class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Label:</label>
+                    <select id="label" name="label" class="block appearance-none w-full bg-gray-200 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white">
+                        <option value="">Select Label</option>
+                        {% for label in labels %}
+                            <option value="{{ label.0 }}">{{ label.1 }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2" for="albumLabel">Label:</label>
-                <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="albumLabel">
-                    <option>Label 1</option>
-                    <option>Label 2</option>
-                    <option>Label 3</option>
-                </select>
+
+            <!-- Lagu Pertama Form -->
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">LAGU PERTAMA</h2>
+            <div class="flex flex-wrap -mx-3 mb-6">
+                <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                    <label for="artist" class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Artist:</label>
+                    <select id="artist" name="artist" class="block appearance-none w-full bg-gray-200 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white">
+                        <option value="">Select Artist</option>
+                        {% for artist in artists %}
+                            <option value="{{ artist.0 }}">{{ artist.2 }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
-                SUBMIT
-            </button>
+            <div class="flex flex-wrap -mx-3 mb-6">
+                <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                    <label for="judul_lagu" class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Judul Lagu:</label>
+                    <input type="text" id="judul_lagu" name="judul_lagu" class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white">
+                </div>
+                {% comment %} {% if user.is_authenticated %}
+                    {% if user.role == 'Artist' %}
+                        <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                            <label for="artist" class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Artist:</label>
+                            <input type="text" id="artist" name="artist" value="{{ user.username }}" class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white">
+                        </div>
+                    {% elif user.role == 'Songwriter' %}
+                        <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                            <label for="artist" class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Artist:</label>
+                            <select id="artist" name="artist" class="block appearance-none w-full bg-gray-200 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white">
+                                {% for artist in artists %}
+                                    <option value="{{ artist.id }}">{{ artist.nama }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endif %}
+                {% endif %} {% endcomment %}
+                <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                    <label for="songwriter" class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Songwriter:</label>
+                    <select id="songwriter" name="songwriter" class="block appearance-none w-full bg-gray-200 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white">
+                        <option value="">Select Songwriter</option>
+                        {% for songwriter in songwriters %}
+                            <option value="{{ songwriter.0 }}">{{ songwriter.1 }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                    <label for="genre" class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Genre:</label>
+                    <select id="genre" name="genre" class="block appearance-none w-full bg-gray-200 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white">
+                        <option value="">Select Genre</option>
+                        {% for genre in genres %}
+                            <option value="{{ genre.0 }}">{{ genre.0 }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                    <label for="durasi" class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Durasi:</label>
+                    <input type="text" id="durasi" name="durasi" class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white">
+                </div>
+            </div>
+
+            <div class="flex justify-center mt-4">
+                <button type="submit" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    Create Album
+                </button>
+            </div>
         </form>
     </div>
 
     <!-- List Album Table -->
-    <div class="container mx-auto text-center">
+    <div class="container mx-auto my-8">
         <table class="min-w-full border border-gray-300">
             <thead>
                 <tr>
                     <th colspan="5" class="text-center border-b border-gray-300 bg-gray-200 px-4 py-2">LIST ALBUM</th>
-                <tr>
+                </tr>
                 <tr>
                     <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Judul</th>
-                    <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Label</th>
                     <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Jumlah Lagu</th>
                     <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Total Durasi</th>
                     <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Action</th>
                 </tr>
             </thead>
             <tbody>
+                {%for album in albums%}
                 <tr class="bg-gray-600">
-                    <td class="border border-gray-300 px-4 py-2">Album 1</td>
-                    <td class="border border-gray-300 px-4 py-2">Label A</td>
-                    <td class="border border-gray-300 px-4 py-2">0</td>
-                    <td class="border border-gray-300 px-4 py-2">0 menit</td>
+                    <td class="border border-gray-300 px-4 py-2 text-white">{{album.1}}</td>
+                    <td class="border border-gray-300 px-4 py-2 text-white">{{album.2}}</td>
+                    <td class="border border-gray-300 px-4 py-2 text-white">{{album.4}}</td>
                     <td class="border border-gray-300 px-4 py-2">
-                        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
-                            Lihat Daftar Lagu
-                        </button>
-                        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
-                            Tambah Lagu
-                        </button>
-                        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
-                            Hapus
-                        </button>
+                        <a id="album-link-{{ album.0 }}" data-album-id="{{ album.0 }}">
+                            <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                Lihat Daftar Lagu
+                            </button>
+                        </a>
+                        <a id="album-add-{{ album.0 }}" data-album-id="{{ album.0 }}">
+                            <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                Tambah Lagu
+                            </button>
+                        </a>
+                        <a id="album-delete-{{ album.0 }}" data-album-id="{{ album.0 }}">
+                            <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                Hapus
+                            </button>
+                        </a>
                     </td>
                 </tr>
-                <tr class="bg-gray-600">
-                    <td class="border border-gray-300 px-4 py-2">Album 2</td>
-                    <td class="border border-gray-300 px-4 py-2">Label B</td>
-                    <td class="border border-gray-300 px-4 py-2">0</td>
-                    <td class="border border-gray-300 px-4 py-2">0 menit</td>
-                    <td class="border border-gray-300 px-4 py-2">
-                        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
-                            Lihat Daftar Lagu
-                        </button>
-                        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
-                            Tambah Lagu
-                        </button>
-                        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
-                            Hapus
-                        </button>
-                    </td>
-                </tr>
-                <!-- More Album Rows -->
+                {%endfor%}
             </tbody>
         </table>
     </div>
 
     <!-- Create Lagu Form -->
-    <div class="container mx-auto my-8">
-        <h2 class="text-2xl font-bold mb-4">CREATE LAGU</h2>
-        <form>
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2" for="albumSelection">Album:</label>
-                <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="albumSelection">
-                    <option>Album 1</option>
-                    <option>Album 2</option>
-                    <option>Album 3</option>
-                </select>
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2" for="songTitle">Judul:</label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="songTitle" type="text" placeholder="Judul Lagu">
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2" for="songArtist">Artist:</label>
-                <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="songArtist">
-                    <option>Artist 1</option>
-                    <option>Artist 2</option>
-                    <option>Artist 3</option>
-                </select>
-            </div>
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
-                SUBMIT
-            </button>
-        </form>
-    </div>
+    {% if add_song %}
+        <div class="container mx-auto my-auto p-4 bg-white shadow-md rounded">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">CREATE LAGU</h2>
+            <form action="/create_song_action/" method="post">
+                {% csrf_token %}
+                <!-- Lagu Pertama Form -->
+                <div class="flex flex-wrap -mx-3 mb-6">
+                    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                        <label for="album_drop" class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">album:</label>
+                        <select disabled id="album_drop" name="album_drop" class="block appearance-none w-full bg-gray-200 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white">
+                            <option value="{{ album_id }}">{{ album_name }}</option>
+                        </select>
+                        <input type="hidden" name="album" value="{{ album_id }}">
+                    </div>
+                    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                        <label for="artist" class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Artist:</label>
+                        <select id="artist" name="artist" class="block appearance-none w-full bg-gray-200 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white">
+                            <option value="">Select Artist</option>
+                            {% for artist in artists %}
+                                <option value="{{ artist.0 }}">{{ artist.2 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="flex flex-wrap -mx-3 mb-6">
+                    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                        <label for="judul_lagu" class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Judul Lagu:</label>
+                        <input type="text" id="judul_lagu" name="judul_lagu" class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white">
+                    </div>
+                    {% comment %} {% if user.is_authenticated %}
+                        {% if user.role == 'Artist' %}
+                            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                                <label for="artist" class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Artist:</label>
+                                <input type="text" id="artist" name="artist" value="{{ user.username }}" class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white">
+                            </div>
+                        {% elif user.role == 'Songwriter' %}
+                            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                                <label for="artist" class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Artist:</label>
+                                <select id="artist" name="artist" class="block appearance-none w-full bg-gray-200 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white">
+                                    {% for artist in artists %}
+                                        <option value="{{ artist.id }}">{{ artist.nama }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% endif %}
+                    {% endif %} {% endcomment %}
+                    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                        <label for="songwriter" class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Songwriter:</label>
+                        <select id="songwriter" name="songwriter" class="block appearance-none w-full bg-gray-200 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white">
+                            <option value="">Select Songwriter</option>
+                            {% for songwriter in songwriters %}
+                                <option value="{{ songwriter.0 }}">{{ songwriter.1 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                        <label for="genre" class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Genre:</label>
+                        <select id="genre" name="genre" class="block appearance-none w-full bg-gray-200 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white">
+                            <option value="">Select Genre</option>
+                            {% for genre in genres %}
+                                <option value="{{ genre.0 }}">{{ genre.0 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                        <label for="durasi" class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Durasi:</label>
+                        <input type="text" id="durasi" name="durasi" class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white">
+                    </div>
+                </div>
 
-    <!-- Daftar Lagu Table -->
-    <div class="container mx-auto text-center">
-        <table class="min-w-full border border-gray-300">
-            <thead>
-                <tr>
-                    <th colspan="5" class="text-center border-b border-gray-300 bg-gray-200 px-4 py-2">DAFTAR LAGU PADA ALBUM 1</th>
-                <tr>
-                    <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Judul</th>
-                    <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Durasi</th>
-                    <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Total Play</th>
-                    <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Total Download</th>
-                    <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="bg-gray-200">
-                    <td class="border border-gray-300 bg-gray-600 px-4 py-2">Lagu 1</td>
-                    <td class="border border-gray-300 bg-gray-600 px-4 py-2">2 menit</td>
-                    <td class="border border-gray-300 bg-gray-600 px-4 py-2">3</td>
-                    <td class="border border-gray-300 bg-gray-600 px-4 py-2">0</td>
-                    <td class="border border-gray-300 bg-gray-600 px-4 py-2">
-                        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
-                            Lihat Detail
-                        </button>
-                        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
-                            Hapus
-                        </button>
-                    </td>
-                </tr>
-                <!-- More Song Rows -->
-            </tbody>
-        </table>
-    </div>
+                <div class="flex justify-center mt-4">
+                    <button type="submit" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                        Create Song
+                    </button>
+                </div>
+                
+            </form>
+        </div>
+    {% endif %}
+    
+
+    {% comment %} {% if album_name && show_song %} {% endcomment %}
+        <!-- Daftar Lagu Table -->
+        <div class="container mx-auto my-8">
+            <table class="min-w-full border border-gray-300">
+                <thead>
+                    <tr>
+                        <th colspan="5" class="text-center border-b border-gray-300 bg-gray-200 px-4 py-2">DAFTAR LAGU PADA ALBUM {{album_name}}</th>
+                    </tr>
+                    <tr>
+                        <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Judul</th>
+                        <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Durasi</th>
+                        <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Total Play</th>
+                        <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Total Download</th>
+                        <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%for song in songs%}
+                    <tr class="bg-gray-200">
+                        <td class="border border-gray-300 bg-gray-600 px-4 py-2 text-white">{{song.0}}</td>
+                        <td class="border border-gray-300 bg-gray-600 px-4 py-2 text-white">{{song.1}}</td>
+                        <td class="border border-gray-300 bg-gray-600 px-4 py-2 text-white">{{song.2}}</td>
+                        <td class="border border-gray-300 bg-gray-600 px-4 py-2 text-white">{{song.3}}</td>
+                        <td class="border border-gray-300 bg-gray-600 px-4 py-2">
+                            <a id="song-detail-{{ song.4 }}" data-song-id="{{ song.4 }}">
+                                <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                                    Lihat Detail
+                                </button>
+                            </a>
+                            <a id="song-delete-{{ song.4 }}" data-song-id="{{ song.4 }}">
+                                <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                                    Hapus
+                                </button>
+                            </a>
+                        </td>
+                    </tr>
+                    {%endfor%}
+                </tbody>
+            </table>
+        </div>
+    {% comment %} {% endif %} {% endcomment %}
 
 </body>
+
+<script>
+    document.querySelectorAll('[id^="album-link-"]').forEach(function(element) {
+        element.addEventListener('click', function() {
+            var newUrl = '/view/album/' + this.dataset.albumId;
+            window.location.href = newUrl;
+        });
+    });
+
+    document.querySelectorAll('[id^="album-add-"]').forEach(function(element) {
+        element.addEventListener('click', function() {
+            var newUrl = '/addto/album/' + this.dataset.albumId;
+            window.location.href = newUrl;
+        });
+    });
+
+    document.querySelectorAll('[id^="album-delete-"]').forEach(function(element) {
+        element.addEventListener('click', function() {
+            var newUrl = '/delete/album/' + this.dataset.albumId;
+            window.location.href = newUrl;
+        });
+    });
+
+    document.querySelectorAll('[id^="song-delete-"]').forEach(function(element) {
+        element.addEventListener('click', function() {
+            var oldUrl = window.location.href;
+            var newUrl = '/delete/song/' + this.dataset.songId;
+            window.location.href = newUrl;
+        });
+    });
+
+    document.querySelectorAll('[id^="song-detail-"]').forEach(function(element) {
+        element.addEventListener('click', function() {
+            var newUrl = '/view/song/' + this.dataset.songId;
+            fetch(newUrl)
+                .then(response => response.json())
+                .then(songDetail => {
+                    document.getElementById('songModalLabel').innerHTML = songDetail.judul;
+                    document.getElementById('songModalBody').innerHTML = `
+                        <p>Artist: ${songDetail.nama}</p>
+                        <p>Duration: ${songDetail.durasi}</p>
+                        <p>Total Play: ${songDetail.total_play}</p>
+                        <p>Total Download: ${songDetail.total_download}</p>`;
+                document.getElementById('songModal').classList.remove('hidden');
+                });
+        });
+    });
+
+    document.getElementById('closeModalButton').addEventListener('click', function() {
+        document.getElementById('songModal').classList.add('hidden');
+    });
+    
+    document.getElementById('closeModalFooterButton').addEventListener('click', function() {
+        document.getElementById('songModal').classList.add('hidden');
+    });
+</script>
+
 {% endblock content %}

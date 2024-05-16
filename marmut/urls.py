@@ -21,5 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("__reload__/", include("django_browser_reload.urls")),
     path('', include('theme.urls')),
-    path('fitur_hijau/', include('fitur_hijau.urls'))
+    path('fitur_hijau/', include('fitur_hijau.urls')),
+    path('fitur_merah/', include('fitur_merah.urls'))
 ]

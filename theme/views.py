@@ -65,7 +65,7 @@ def login_user(request):
                     SELECT EXISTS (
                         SELECT 1
                         FROM podcaster
-                        WHERE email_akun = %s
+                        WHERE email = %s
                     )
                     """, [email]
                 )
@@ -125,6 +125,7 @@ def register_pengguna(request):
         is_artist = 'artist' in roles
         is_songwriter = 'songwriter' in roles
         
+        
         if is_podcaster or is_artist or is_songwriter:
             is_verified = 'True'
         else:
@@ -139,14 +140,14 @@ def register_pengguna(request):
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 """, (email, password, nama, gender, tempat_lahir, tanggal_lahir, kota_asal, is_verified)
             )
-
+            
             if is_podcaster:
                 cursor.execute(
                     """
                     SET search_path to MARMUT;
-                    INSERT INTO PODCASTER(email)
+                    INSERT INTO PODCASTER
                     VALUES (%s)
-                    """, (email)
+                    """, (email,)
                 )
                 
             if is_artist:
@@ -223,7 +224,7 @@ def register_label(request):
                 SET search_path to MARMUT;
                 INSERT INTO LABEL(id, nama, email, password, kontak, id_pemilik_hak_cipta)
                 VALUES (%s, %s, %s, %s, %s, %s)
-                """, (uuid_label, email, password, nama, kontak, uuid_hak_cipta)
+                """, (uuid_label, nama, email, password, kontak, uuid_hak_cipta)
             )
             messages.success(request, 'Your account has been successfully created!')
             return HttpResponseRedirect(reverse('theme:login'))

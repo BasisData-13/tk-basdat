@@ -53,17 +53,18 @@
             <div class="flex flex-wrap -mx-3 mb-6">
                 <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                     <label for="artist" class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Artist:</label>
-                    {% if role == "artist" %}
+                    {% if is_artist %}
                         <input type="hidden" name="artist" value="{{ id }}">
                         <select disabled id="artist-drop" name="artist-drop" class="block appearance-none w-full bg-gray-200 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white">
                             <option value="">Select Artist</option>
                             {% for artist in artists %}
-                                {% if artist.0 == id %}
-                                    <option value="{{ artist.0 }}" selected>{{ artist.2 }}</option>
+                                {% if artist.0 == artist_id %}
+                                    <option value="{{ artist_id }}" selected>{{ artist.2 }}</option>
                                 {% else %}
                                     <option value="{{ artist.0 }}">{{ artist.2 }}</option>
                                 {% endif %}
                             {% endfor %}
+                            <input type="hidden" name="artist" value="{{ artist_id }}">
                         </select>
                     {% else %}
                         <select id="artist" name="artist" class="block appearance-none w-full bg-gray-200 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white">
@@ -85,7 +86,7 @@
                     <select id="songwriter" name="songwriter" class="block appearance-none w-full bg-gray-200 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white" multiple size="1">
                         <option value="">Select Songwriter</option>
                         {% for songwriter in songwriters %}
-                            {% if role == "songwriter" and songwriter.0 == id %}
+                            {% if is_songwriter and songwriter.0 == songwriter_id %}
                                 <option value="{{ songwriter.0 }}" selected>{{ songwriter.1 }}</option>
                             {% else %}
                                 <option value="{{ songwriter.0 }}">{{ songwriter.1 }}</option>
@@ -177,17 +178,18 @@
                     </div>
                     <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                         <label for="artist" class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Artist:</label>
-                        {% if role == "artist" %}
+                        {% if is_artist %}
                             <input type="hidden" name="artist" value="{{ id }}">
                             <select disabled id="artist-drop" name="artist-drop" class="block appearance-none w-full bg-gray-200 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white">
                                 <option value="">Select Artist</option>
                                 {% for artist in artists %}
-                                    {% if artist.0 == id %}
+                                    {% if artist.0 == artist_id %}
                                         <option value="{{ artist.0 }}" selected>{{ artist.2 }}</option>
                                     {% else %}
                                         <option value="{{ artist.0 }}">{{ artist.2 }}</option>
                                     {% endif %}
                                 {% endfor %}
+                                <input type="hidden" name="artist" value="{{ artist_id }}">
                             </select>
                         {% else %}
                             <select id="artist" name="artist" class="block appearance-none w-full bg-gray-200 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white">
@@ -209,7 +211,7 @@
                         <select id="songwriter" name="songwriter" class="block appearance-none w-full bg-gray-200 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white" multiple size="1">
                             <option value="">Select Songwriter</option>
                             {% for songwriter in songwriters %}
-                                {% if role == "songwriter" and songwriter.0 == id %}
+                                {% if is_songwriter and songwriter.0 == songwriter_id %}
                                     <option value="{{ songwriter.0 }}" selected>{{ songwriter.1 }}</option>
                                 {% else %}
                                     <option value="{{ songwriter.0 }}">{{ songwriter.1 }}</option>

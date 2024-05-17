@@ -8,13 +8,71 @@ def get_all_royalti(request):
     cursor = connection.cursor()
     role = request.COOKIES.get('user_role')
     email = request.COOKIES.get('user_email')
-    print(role, email)
+    kumpulan_id = []
+    royalties = []
     id_pemilik_hak_cipta = None
     
-    if role == 'songwriter':
-        id_pemilik_hak_cipta = get_id_hak_cipta(request,get_songwriter_id(request,email),"songwriter")
-    elif role == 'artist':
-        id_pemilik_hak_cipta = get_id_hak_cipta(request,get_artist_id(request,email),"artist")
+    if role != 'label':
+        if request.COOKIES.get('is_songwriter') == 'True':
+            id_pemilik_hak_cipta = get_id_hak_cipta(request,get_songwriter_id(request,email),"songwriter")
+            kumpulan_id.append(id_pemilik_hak_cipta)
+        if request.COOKIES.get('is_artist') == 'True':
+            id_pemilik_hak_cipta = get_id_hak_cipta(request,get_artist_id(request,email),"artist")
+            kumpulan_id.append(id_pemilik_hak_cipta)
+            
+        print(kumpulan_id)
+            
+        for id in kumpulan_id:
+            cursor.execute(
+                '''
+                SET search_path to MARMUT;
+                WITH updated_royalties AS (
+                    UPDATE ROYALTI
+                    SET jumlah = subquery.total_play * subquery.rate_royalti
+                    FROM (
+                        SELECT 
+                            r.id_song,
+                            s.total_play,
+                            p.rate_royalti
+                        FROM 
+                            ROYALTI r
+                        JOIN 
+                            SONG s ON r.id_song = s.id_konten
+                        JOIN 
+                            PEMILIK_HAK_CIPTA p ON r.id_pemilik_hak_cipta = p.id
+                    ) AS subquery
+                    WHERE ROYALTI.id_song = subquery.id_song
+                    RETURNING ROYALTI.id_song, ROYALTI.jumlah
+                )
+                SELECT DISTINCT
+                    k.judul AS judul_lagu,
+                    a.judul AS judul_album,
+                    s.total_play,
+                    s.total_download,
+                    ur.jumlah AS total_royalti_didapat,
+                    r.id_pemilik_hak_cipta
+                FROM 
+                    SONG s
+                JOIN 
+                    KONTEN k ON s.id_konten = k.id
+                JOIN 
+                    ALBUM a ON s.id_album = a.id
+                JOIN 
+                    ROYALTI ur ON s.id_konten = ur.id_song
+                JOIN
+                    SONGWRITER_WRITE_SONG sw ON s.id_konten = sw.id_song
+                JOIN
+                    ROYALTI r ON k.id = r.id_song
+                WHERE 
+                    r.id_pemilik_hak_cipta = %s
+                ORDER BY 
+                    k.judul;
+                ''', [id]
+            )
+            royalties += cursor.fetchall()
+            print(royalties)
+        return list(set(royalties))
+            
     elif role == 'label':
         cursor.execute(
             '''
@@ -26,60 +84,14 @@ def get_all_royalti(request):
             id_pemilik_hak_cipta = cursor.fetchone()[0]
         except TypeError:
             id_pemilik_hak_cipta = None
-            
+        
     
-    if id_pemilik_hak_cipta == None:
-        return None
-    else:
-        cursor.execute(
-            '''
-            SET search_path to MARMUT;
-            WITH updated_royalties AS (
-                UPDATE ROYALTI
-                SET jumlah = subquery.total_play * subquery.rate_royalti
-                FROM (
-                    SELECT 
-                        r.id_song,
-                        s.total_play,
-                        p.rate_royalti
-                    FROM 
-                        ROYALTI r
-                    JOIN 
-                        SONG s ON r.id_song = s.id_konten
-                    JOIN 
-                        PEMILIK_HAK_CIPTA p ON r.id_pemilik_hak_cipta = p.id
-                ) AS subquery
-                WHERE ROYALTI.id_song = subquery.id_song
-                RETURNING ROYALTI.id_song, ROYALTI.jumlah
-            )
-            SELECT 
-                k.judul AS judul_lagu,
-                a.judul AS judul_album,
-                s.total_play,
-                s.total_download,
-                ur.jumlah AS total_royalti_didapat
-            FROM 
-                SONG s
-            JOIN 
-                KONTEN k ON s.id_konten = k.id
-            JOIN 
-                ALBUM a ON s.id_album = a.id
-            JOIN 
-                ROYALTI ur ON s.id_konten = ur.id_song
-            WHERE 
-                ur.id_pemilik_hak_cipta = %s
-            ORDER BY 
-                k.judul;
-            ''', [id_pemilik_hak_cipta]
-        )
-
-        royalties = cursor.fetchall()
-        return royalties
-
 def get_album(request):
     cursor = connection.cursor()
     role = request.COOKIES.get('user_role')
     email = request.COOKIES.get('user_email')
+    albums = []
+    
     if role == 'label':
         id_label = get_label_id(request,email)
         cursor.execute(
@@ -89,38 +101,47 @@ def get_album(request):
             WHERE id_label = %s;
             ''', [id_label]
         )
-    elif role == 'artist':
-        id_artist = get_artist_id(request,email)
-        cursor.execute(
-            '''
-            SET search_path to MARMUT;
-            SELECT DISTINCT a.id, a.judul, a.jumlah_lagu, a.id_label, a.total_durasi
-            FROM album a
-            JOIN
-                SONG s ON a.id = s.id_album
-            WHERE s.id_artist = %s;
-            ''', [id_artist]
-        )
-    elif role == 'songwriter':
-        id_songwriter = get_songwriter_id(request,email)
-        cursor.execute(
-            '''
-            SET search_path to MARMUT;
-            SELECT DISTINCT a.id, a.judul, a.jumlah_lagu, a.id_label, a.total_durasi
-            FROM album a
-            JOIN
-                SONG s ON a.id = s.id_album
-            JOIN
-                songwriter_write_song sw ON s.id_konten = sw.id_song
-            WHERE sw.id_songwriter = %s;
-            ''', [id_songwriter]
-        )
-    try:
-        albums = cursor.fetchall()
-        print(albums)
-        return albums
-    except TypeError:
-        return None
+        try:
+            albums += cursor.fetchall()
+        except TypeError:
+            albums += []
+    else:
+        if request.COOKIES.get('is_artist') == 'True':
+            id_artist = get_artist_id(request,email)
+            cursor.execute(
+                '''
+                SET search_path to MARMUT;
+                SELECT DISTINCT a.id, a.judul, a.jumlah_lagu, a.id_label, a.total_durasi
+                FROM album a
+                JOIN
+                    SONG s ON a.id = s.id_album
+                WHERE s.id_artist = %s;
+                ''', [id_artist]
+            )
+            try:
+                albums += cursor.fetchall()
+            except TypeError:
+                albums += []
+        if request.COOKIES.get('is_songwriter') == 'True':
+            id_songwriter = get_songwriter_id(request,email)
+            cursor.execute(
+                '''
+                SET search_path to MARMUT;
+                SELECT DISTINCT a.id, a.judul, a.jumlah_lagu, a.id_label, a.total_durasi
+                FROM album a
+                JOIN
+                    SONG s ON a.id = s.id_album
+                JOIN
+                    songwriter_write_song sw ON s.id_konten = sw.id_song
+                WHERE sw.id_songwriter = %s;
+                ''', [id_songwriter]
+            )
+            try:
+                albums += cursor.fetchall()
+            except TypeError:
+                albums += []
+            
+    return list(set(albums))
 
 def get_album_songs(request, album_id):
     cursor = connection.cursor()
@@ -259,25 +280,29 @@ def view_album_action(request, album_id):
             context = {'albums': albums, 'songs': songs, 'album_name': album_name}
             return render(request, "rd_kelola_album_song.html", context)
         
-        elif request.COOKIES.get('user_role') == 'artist' or request.COOKIES.get('user_role') == 'songwriter':
+        elif request.COOKIES.get('is_artist') == 'True' or request.COOKIES.get('is_songwriter') == 'True':
             albums = get_album(request)
             songs = get_album_songs(request, album_id)
             album_name = get_album_name(request, album_id)
             album_id = album_id
             add_song = False
+            is_artist = False
+            is_songwriter = False
             
-            if request.COOKIES.get('user_role') == 'artist':
-                role = 'artist'
-                id = get_artist_id(request, request.COOKIES.get('user_email'))
-            elif request.COOKIES.get('user_role') == 'songwriter':
-                role = 'songwriter'
-                id = get_songwriter_id(request, request.COOKIES.get('user_email'))
+            if request.COOKIES.get('is_artist') == 'True':
+                is_artist = True
+                artist_id = get_artist_id(request, request.COOKIES.get('user_email'))
+            if request.COOKIES.get('is_songwriter') == 'True':
+                is_songwriter = True
+                songwriter_id = get_songwriter_id(request, request.COOKIES.get('user_email'))
             
             genres = get_daftar_genre_song(request)
             songwriters = get_songwriters(request)
             artists = get_artists(request)
-            context = {'albums': albums, 'songs': songs, 'genres': genres, 'songwriters' : songwriters, 'role': role,
-                       'id':id,'album_name': album_name, 'album_id': album_id, 'add_song': add_song, 'artists': artists}
+            
+            context = {'albums': albums, 'songs': songs, 'genres': genres, 'songwriters' : songwriters, 'is_artist': is_artist, 'artist_id': artist_id,
+                        'is_songwriter': is_songwriter, 'songwriter_id': songwriter_id, 'album_name': album_name, 'album_id': album_id, 
+                        'add_song': add_song, 'artists': artists}
             return render(request, "crud_album_song.html", context)
         
 def addto_album_action(request, album_id):
@@ -287,26 +312,30 @@ def addto_album_action(request, album_id):
         album_name = get_album_name(request, album_id)
         album_id = album_id
         add_song = True
+        is_artist = False
+        is_songwriter = False
         
-        if request.COOKIES.get('user_role') == 'artist':
-            role = 'artist'
-            id = get_artist_id(request, request.COOKIES.get('user_email'))
-        elif request.COOKIES.get('user_role') == 'songwriter':
-            role = 'songwriter'
-            id = get_songwriter_id(request, request.COOKIES.get('user_email'))
+        if request.COOKIES.get('is_artist') == 'True':
+            is_artist = True
+            artist_id = get_artist_id(request, request.COOKIES.get('user_email'))
+        if request.COOKIES.get('is_songwriter') == 'True':
+            is_songwriter = True
+            songwriter_id = get_songwriter_id(request, request.COOKIES.get('user_email'))
         
         genres = get_daftar_genre_song(request)
         songwriters = get_songwriters(request)
         artists = get_artists(request)
-        context = {'albums': albums, 'songs': songs, 'genres': genres, 'songwriters' : songwriters, 'role': role,
-                    'id':id, 'album_name': album_name, 'album_id': album_id, 'add_song': add_song, 'artists': artists}
+        
+        context = {'albums': albums, 'songs': songs, 'genres': genres, 'songwriters' : songwriters, 'is_artist': is_artist, 'artist_id': artist_id,
+                    'is_songwriter': is_songwriter, 'songwriter_id': songwriter_id, 'album_name': album_name, 'album_id': album_id, 
+                    'add_song': add_song, 'artists': artists}
         return render(request, "crud_album_song.html", context)
 
 def delete_album_action(request, album_id):
     if request.method == 'GET':
         delete_album(request, album_id)
         role = request.COOKIES.get('user_role')
-        if(role == 'artist' or role == 'songwriter'):
+        if request.COOKIES.get('is_artist') == 'True' or request.COOKIES.get('is_songwriter') == 'True':
             return redirect('fitur_merah:crud_album_song')
         elif(role == 'label'):
             return redirect('fitur_merah:rd_kelola_album_song')
@@ -567,14 +596,17 @@ def show_crud_album_song(request):
     genres = get_daftar_genre_song(request)
     labels = get_labels(request)
     artists = get_artists(request)
+    is_artist = False
+    is_songwriter = False
     
-    if request.COOKIES.get('user_role') == 'artist':
-        role = 'artist'
-        id = get_artist_id(request, request.COOKIES.get('user_email'))
-    elif request.COOKIES.get('user_role') == 'songwriter':
-        role = 'songwriter'
-        id = get_songwriter_id(request, request.COOKIES.get('user_email'))
+    if request.COOKIES.get('is_artist') == 'True':
+        is_artist = True
+        artist_id = get_artist_id(request, request.COOKIES.get('user_email'))
+    if request.COOKIES.get('is_songwriter') == 'True':
+        is_songwriter = True
+        songwriter_id = get_songwriter_id(request, request.COOKIES.get('user_email'))
     
-    context = {'songwriters': songwriters, 'albums': albums, 'role':role, 'id':id,
+    context = {'songwriters': songwriters, 'albums': albums, 'is_artist': is_artist, 'artist_id': artist_id, 
+               'is_songwriter': is_songwriter, 'songwriter_id': songwriter_id,
                'genres': genres, 'labels': labels, 'artists': artists}
     return render(request, "crud_album_song.html",context)

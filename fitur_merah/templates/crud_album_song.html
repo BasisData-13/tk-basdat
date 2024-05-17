@@ -246,7 +246,7 @@
     {% endif %}
     
 
-    {% comment %} {% if album_name && show_song %} {% endcomment %}
+    {% if album_name %}
         <!-- Daftar Lagu Table -->
         <div class="container mx-auto my-8">
             <table class="min-w-full border border-gray-300">
@@ -286,7 +286,7 @@
                 </tbody>
             </table>
         </div>
-    {% comment %} {% endif %} {% endcomment %}
+    {% endif %}
 
 </body>
 

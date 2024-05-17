@@ -1,4 +1,5 @@
 import datetime
+import uuid
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
@@ -8,6 +9,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.db import connection
+
     
 
 @login_required(login_url='/login')
@@ -126,14 +129,175 @@ def show_dashboard(request):
     return render(request, 'dashboard.html')
 
 # fitur biru
-def show_r_play_podcast(request):
-    return render(request, "r_play_podcast.html")
+def show_r_play_podcast(request, podcast_id):
+    play_podcast = get_podcast_details(request, podcast_id)
+    return render(request, 'r_play_podcast/main.html', {'play_podcast': play_podcast})
 
+def get_podcast_details(request, podcast_id):
+    from django.db import connection
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SET search_path to marmut;
+            SELECT 
+                k.judul AS podcast_title,
+                array_agg(g.genre) AS genres,
+                a.nama AS podcaster_name,
+                k.durasi AS total_duration,
+                k.tanggal_rilis,
+                k.tahun,
+                e.judul AS episode_title,
+                e.deskripsi,
+                e.durasi AS episode_duration,
+                e.tanggal_rilis AS episode_date
+            FROM PODCAST p
+            JOIN KONTEN k ON p.id_konten = k.id
+            JOIN PODCASTER pd ON p.email_podcaster = pd.email
+            JOIN AKUN a ON pd.email = a.email
+            LEFT JOIN EPISODE e ON p.id_konten = e.id_konten_podcast
+            LEFT JOIN GENRE g ON k.id = g.id_konten
+            WHERE p.id_konten = %s
+            GROUP BY k.id, a.nama, e.id
+            ORDER BY e.tanggal_rilis;
+        """, [podcast_id])
+        result = cursor.fetchall()
+        return result
+    
 def show_ru_melihat_chart(request):
-    return render(request, "ru_melihat_chart/main.html")
+    with connection.cursor() as cursor:
+        cursor.execute("""
+                SET search_path to MARMUT;
+                SELECT tipe FROM CHART
+                """)
+        charts = cursor.fetchall()
+    return render(request, "ru_melihat_chart/main.html", {'charts': charts})
 
-def show_ru_melihat_chart_detail(request):
-    return render(request, 'ru_melihat_chart/detail.html')
+def show_ru_melihat_chart_detail(request, chart_type):
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SET search_path to MARMUT;
+            SELECT 
+                k.judul AS song_title,
+                a.name AS artist_name,
+                k.tanggal_rilis AS release_date,
+                s.total_play AS total_plays
+            FROM 
+                CHART c
+            JOIN 
+                PLAYLIST_SONG ps ON c.id_playlist = ps.id_playlist
+            JOIN 
+                SONG s ON ps.id_song = s.id_konten
+            JOIN 
+                ARTIST ar ON s.id_artist = ar.id
+            JOIN
+                KONTEN k ON s.id_konten = k.id
+            JOIN 
+                AKUN a ON ar.email = a.email
+            WHERE 
+                c.tipe = %s
+            ORDER BY 
+                s.total_play DESC
+            LIMIT 20;
+        """, [chart_type])
+        songs = cursor.fetchall()
+    return render(request, 'ru_melihat_chart/detail.html', {'chart_type': chart_type, 'songs': songs})
 
 def show_crud_kelola_podcast(request):
-    return render(request, "crud_kelola_podcast.html")
+    genres = get_genres()
+    podcasts = get_all_podcasts(request)
+    context = {'podcasts': podcasts, 'genres' : genres}
+    return render(request, "crud_kelola_podcast.html", context)
+
+def get_genres():
+    with connection.cursor() as cursor:
+        cursor.execute('''
+            SET search_path to MARMUT;
+            SELECT genre FROM genre;
+        ''')
+        genres = cursor.fetchall()
+    return genres
+
+def get_all_podcasts(request):
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SET search_path to MARMUT;
+            SELECT k.id, k.judul, k.durasi AS total_durasi, COUNT(e.id_episode) AS jumlah_episode
+            FROM MARMUT.PODCAST p
+            JOIN MARMUT.KONTEN k ON p.id_konten = k.id
+            LEFT JOIN MARMUT.EPISODE e ON p.id_konten = e.id_konten_podcast
+            GROUP BY k.id, k.judul, k.durasi;
+        """)
+        return cursor.fetchall()
+
+def create_podcast(request):
+    if request.method == 'POST':
+        judul = request.POST.get('judul')
+        genres = request.POST.getlist('genre')
+        email_podcaster = request.COOKIES.get('user_email')
+
+        with connection.cursor() as cursor:
+            cursor.execute('''
+                SET search_path to MARMUT;
+                INSERT INTO konten (id, judul, tanggal_dibuat, tahun_dibuat, durasi) 
+                VALUES (UUID(), %s, CURRENT_DATE, EXTRACT(YEAR FROM CURRENT_DATE), INTERVAL '0 seconds')
+                RETURNING id;
+            ''', [judul])
+            id_konten = cursor.fetchone()[0]
+            
+            cursor.execute('''
+                INSERT INTO podcast (id_konten, email_podcaster)
+                VALUES (%s, %s);
+            ''', [id_konten, email_podcaster])
+
+            for genre in genres:
+                cursor.execute('''
+                    INSERT INTO genre (id_konten, genre)
+                    VALUES (%s, %s);
+                ''', [id_konten, genre])
+
+        return redirect('show_crud_kelola_podcast')
+
+def delete_podcast(request, podcast_id):
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SET search_path to MARMUT;
+            DELETE FROM MARMUT.PODCAST WHERE id_konten = %s;
+            DELETE FROM MARMUT.KONTEN WHERE id = %s;
+        """, [podcast_id, podcast_id])
+    return redirect('show_crud_kelola_podcast')
+
+def show_podcast_detail(request, podcast_id):
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SET search_path to MARMUT;
+            SELECT k.judul AS judul_podcast, k.durasi AS total_durasi, g.genre, e.judul AS judul_episode, e.deskripsi, e.durasi AS durasi_episode, e.tanggal_rilis
+            FROM MARMUT.PODCAST p
+            JOIN MARMUT.KONTEN k ON p.id_konten = k.id
+            LEFT JOIN MARMUT.EPISODE e ON p.id_konten = e.id_konten_podcast
+            LEFT JOIN MARMUT.GENRE g ON k.id = g.id_konten
+            WHERE p.id_konten = %s;
+        """, [podcast_id])
+        podcast_details = cursor.fetchall()
+    return render(request, 'podcast_detail.html', {'podcast_details': podcast_details})
+
+def create_episode(request, podcast_id):
+    if request.method == 'POST':
+        judul = request.POST.get('judul')
+        deskripsi = request.POST.get('deskripsi')
+        durasi = request.POST.get('durasi')
+        tanggal_rilis = request.POST.get('tanggal_rilis')
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SET search_path to MARMUT;
+                INSERT INTO MARMUT.EPISODE (id_episode, id_konten_podcast, judul, deskripsi, durasi, tanggal_rilis)
+                VALUES (%s, %s, %s, %s, %s, %s);
+            """, [str(uuid.uuid4()), podcast_id, judul, deskripsi, durasi, tanggal_rilis])
+        return redirect('show_podcast_detail', podcast_id=podcast_id)
+    return render(request, 'create_episode.html', {'podcast_id': podcast_id})
+
+def delete_episode(request, episode_id):
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SET search_path to MARMUT;
+            DELETE FROM MARMUT.EPISODE WHERE id_episode = %s;
+        """, [episode_id])
+    return redirect('show_podcast_detail', podcast_id=request.GET.get('podcast_id'))

@@ -6,124 +6,64 @@
 
 {% block content %}
 
-    <body class="bg-gray-800">
+<body class="bg-gray-800">
+    <div class="container mx-auto p-5">
+        <div class="flex flex-wrap justify-around">
+            <div class="bg-white p-6 rounded-lg shadow-lg m-3 w-full md:w-5/12">
+                <h2 class="text-xl font-bold mb-4">CREATE PODCAST</h2>
+                <form action="{% url 'create_podcast' %}" method="post" class="flex flex-wrap">
+                    {% csrf_token %}
+                    <div class="form-group w-full mb-4">
+                        <label for="podcastTitle" class="font-bold">Judul:</label>
+                        <input type="text" id="podcastTitle" name="judul" required class="w-full px-2 py-1 border rounded">
+                    </div>
+                    <div class="form-group w-full mb-4">
+                        <label for="podcastGenre" class="font-bold">Genre:</label>
+                        <select id="podcastGenre" name="genre" multiple required class="w-full px-2 py-1 border rounded">
+                            {% for genre in genres %}
+                                <option value="{{ genre.0 }}">{{ genre.0 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full">SUBMIT</button>
+                </form>
+            </div>
 
-        <div class="container mx-auto p-5">
-            <div class="flex flex-wrap justify-around">
-                <div class="bg-white p-6 rounded-lg shadow-lg m-3 w-full md:w-5/12">
-                    <h2 class="text-xl font-bold mb-4">CREATE PODCAST</h2>
-                    <form id="createPodcastForm" class="flex flex-wrap">
-                        <div class="form-group w-full mb-4">
-                            <label for="podcastTitle" class="font-bold">Judul:</label>
-                            <input type="text" id="podcastTitle" name="podcastTitle" required class="w-full px-2 py-1 border rounded">
-                        </div>
-                        <div class="form-group w-full mb-4">
-                            <label for="podcastGenre" class="font-bold">Genre:</label>
-                            <select id="podcastGenre" name="podcastGenre" multiple required class="w-full px-2 py-1 border rounded">
-                                <option value="genre1">Genre1</option>
-                                <option value="genre2">Genre2</option>
-                            </select>
-                        </div>
-                        <div class="form-group w-full mb-4">
-                            <label for="podcastDuration" class="font-bold">Durasi:</label>
-                            <input type="text" id="podcastDuration" name="podcastDuration" required class="w-full px-2 py-1 border rounded">
-                        </div>
-                        <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full">SUBMIT</button>
-                    </form>
-                </div>
-
-                <div class="bg-white p-6 rounded-lg shadow-lg m-3 w-full md:w-5/12">
-                    <h2 class="text-xl font-bold mb-4">LIST PODCAST</h2>
-                    <table class="min-w-full border-collapse">
-                        <thead>
-                            <tr>
-                                <th class="px-4 py-2 border bg-gray-200">Judul</th>
-                                <th class="px-4 py-2 border bg-gray-200">Jumlah Episode</th>
-                                <th class="px-4 py-2 border bg-gray-200">Total Durasi</th>
-                                <th class="px-4 py-2 border bg-gray-200">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="bg-gray-100">
-                                <td class="border px-4 py-2">Podcast1</td>
-                                <td class="border px-4 py-2">0</td>
-                                <td class="border px-4 py-2">0 menit</td>
-                                <td class="border px-4 py-2">
+            <!-- LIST PODCAST -->
+            <div class="bg-white p-6 rounded-lg shadow-lg m-3 w-full md:w-5/12">
+                <h2 class="text-xl font-bold mb-4">LIST PODCAST</h2>
+                <table class="min-w-full border-collapse">
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-2 border bg-gray-200">Judul</th>
+                            <th class="px-4 py-2 border bg-gray-200">Jumlah Episode</th>
+                            <th class="px-4 py-2 border bg-gray-200">Total Durasi</th>
+                            <th class="px-4 py-2 border bg-gray-200">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for podcast in podcasts %}
+                        <tr class="bg-gray-100">
+                            <td class="border px-4 py-2">{{ podcast.1 }}</td>
+                            <td class="border px-4 py-2">{{ podcast.3 }}</td>
+                            <td class="border px-4 py-2">{{ podcast.2 }} menit</td>
+                            <td class="border px-4 py-2">
+                                <a href="{% url 'show_podcast_detail' podcast.0 %}">
                                     <button class="bg-green-500 hover:bg-green-700 text-white py-1 px-2 rounded">Lihat Daftar Episode</button>
+                                </a>
+                                <a href="{% url 'create_episode' podcast.0 %}">
                                     <button class="bg-green-500 hover:bg-green-700 text-white py-1 px-2 rounded">Tambah Episode</button>
+                                </a>
+                                <a href="{% url 'delete_podcast' podcast.0 %}" onclick="return confirm('Are you sure you want to delete this podcast?');">
                                     <button class="bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded">Hapus</button>
-                                </td>
-                            </tr>
-                            <tr class="bg-gray-100">
-                                <td class="border px-4 py-2">Podcast2</td>
-                                <td class="border px-4 py-2">12</td>
-                                <td class="border px-4 py-2">120 menit</td>
-                                <td class="border px-4 py-2">
-                                    <button class="bg-green-500 hover:bg-green-700 text-white py-1 px-2 rounded">Lihat Daftar Episode</button>
-                                    <button class="bg-green-500 hover:bg-green-700 text-white py-1 px-2 rounded">Tambah Episode</button>
-                                    <button class="bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded">Hapus</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="bg-white p-6 rounded-lg shadow-lg m-3 w-full md:w-5/12">
-                    <h2 class="text-xl font-bold mb-4">CREATE EPISODE</h2>
-                    <form id="createEpisodeForm" class="flex flex-wrap">
-                        <div class="form-group w-full mb-4">
-                            <label for="episodeTitle" class="font-bold">Judul:</label>
-                            <input type="text" id="episodeTitle" name="episodeTitle" required class="w-full px-2 py-1 border rounded">
-                        </div>
-                        <div class="form-group w-full mb-4">
-                            <label for="episodeDescription" class="font-bold">Deskripsi:</label>
-                            <textarea id="episodeDescription" name="episodeDescription" required class="w-full px-2 py-1 border rounded"></textarea>
-                        </div>
-                        <div class="form-group w-full mb-4">
-                            <label for="episodeDuration" class="font-bold">Durasi:</label>
-                            <input type="text" id="episodeDuration" name="episodeDuration" required class="w-full px-2 py-1 border rounded">
-                        </div>
-                        <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full">SUBMIT</button>
-                    </form>
-                </div>
-            
-                <div class="bg-white p-6 rounded-lg shadow-lg m-3 w-full md:w-5/12">
-                    <h2 class="text-xl font-bold mb-4">DAFTAR EPISODE PADA PODCAST1</h2>
-                    <table class="min-w-full border-collapse">
-                        <thead>
-                            <tr>
-                                <th class="px-4 py-2 border bg-gray-200">Judul Episode</th>
-                                <th class="px-4 py-2 border bg-gray-200">Deskripsi</th>
-                                <th class="px-4 py-2 border bg-gray-200">Durasi</th>
-                                <th class="px-4 py-2 border bg-gray-200">Tanggal</th>
-                                <th class="px-4 py-2 border bg-gray-200">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="bg-gray-100">
-                                <td class="border px-4 py-2">SubJudul1</td>
-                                <td class="border px-4 py-2">Lorem Ipsum dulur si amet</td>
-                                <td class="border px-4 py-2">59 menit</td>
-                                <td class="border px-4 py-2">18/03/2024</td>
-                                <td class="border px-4 py-2">
-                                    <button class="bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded">Hapus</button>
-                                </td>
-                            </tr>
-                            <tr class="bg-gray-100">
-                                <td class="border px-4 py-2">SubJudul2</td>
-                                <td class="border px-4 py-2">Lorem Ipsum dulur si amet</td>
-                                <td class="border px-4 py-2">1 jam 2 menit</td>
-                                <td class="border px-4 py-2">25/03/2024</td>
-                                <td class="border px-4 py-2">
-                                    <button class="bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded">Hapus</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
-
-    </body>
-
+    </div>
+</body>
 {% endblock content %}

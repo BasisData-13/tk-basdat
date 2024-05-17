@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>Detail Podcast - {{ podcast_details.0.0 }}</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="container mx-auto p-5">
+    <div class="bg-white p-6 rounded-lg shadow-lg m-3">
+        <h2 class="text-xl font-bold mb-4">{{ podcast_details.0.0 }}</h2>
+        <p>Total Durasi: {{ podcast_details.0.1 }} menit</p>
+        <h3 class="text-lg font-bold mt-4">DAFTAR EPISODE</h3>
+        <table class="min-w-full border-collapse mt-2">
+            <thead>
+                <tr>
+                    <th class="px-4 py-2 border bg-gray-200">Judul Episode</th>
+                    <th class="px-4 py-2 border bg-gray-200">Deskripsi</th>
+                    <th class="px-4 py-2 border bg-gray-200">Durasi</th>
+                    <th class="px-4 py-2 border bg-gray-200">Tanggal Rilis</th>
+                    <th class="px-4 py-2 border bg-gray-200">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for episode in podcast_details %}
+                <tr class="bg-gray-100">
+                    <td class="border px-4 py-2">{{ episode.3 }}</td>
+                    <td class="border px-4 py-2">{{ episode.4 }}</td>
+                    <td class="border px-4 py-2">{{ episode.5 }} menit</td>
+                    <td class="border px-4 py-2">{{ episode.6 }}</td>
+                    <td class="border px-4 py-2">
+                        <a href="{% url 'delete_episode' episode.id %}" onclick="return confirm('Are you sure you want to delete this episode?');">
+                            <button class="bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded">Hapus</button>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}

@@ -6,8 +6,6 @@
 
 {% block content %}
 <body class="bg-gray-100">
-
-    <!-- List Album Table -->
     <div class="container mx-auto my-8 flex items-center justify-center flex-col">
         <table class="min-w-full border border-gray-300">
             <thead>
@@ -20,27 +18,18 @@
                 </tr>
             </thead>
             <tbody>
+                {% for chart in charts %}
                 <tr class="bg-gray-600">
-                    <td class="border border-gray-300 px-4 py-2">Daily Top 20</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ chart.0 }}</td>
                     <td class="border border-gray-300 px-4 py-2">
-                        <a href="{% url 'theme:ru_melihat_chart_detail' %}">
+                        <a href="{% url 'ru_melihat_chart_detail' chart.0 %}">
                             <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
                                 Lihat Daftar Lagu
                             </button>
                         </a>
                     </td>
                 </tr>
-                <tr class="bg-gray-600">
-                    <td class="border border-gray-300 px-4 py-2">Weekly Top 20</td>
-                    <td class="border border-gray-300 px-4 py-2">
-                        <a href="{% url 'theme:ru_melihat_chart_detail' %}">
-                            <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
-                                Lihat Daftar Lagu
-                            </button>
-                        </a>
-                    </td>
-                </tr>
-                <!-- More Album Rows -->
+                {% endfor %}
             </tbody>
         </table>
         <a href="{% url 'theme:show_main' %}">
@@ -49,8 +38,5 @@
             </button>
         </a>
     </div>
-    
-
 </body>
-
 {% endblock content %}

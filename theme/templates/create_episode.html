@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>Create Episode</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="container mx-auto p-5">
+    <div class="bg-white p-6 rounded-lg shadow-lg m-3">
+        <h2 class="text-xl font-bold mb-4">CREATE EPISODE</h2>
+        <form action="{% url 'create_episode' podcast_id %}" method="post">
+            {% csrf_token %}
+            <label for="judul">Judul:</label>
+            <input type="text" id="judul" name="judul" required>
+            <label for="deskripsi">Deskripsi:</label>
+            <textarea id="deskripsi" name="deskripsi" required></textarea>
+            <label for="durasi">Durasi:</label>
+            <input type="text" id="durasi" name="durasi" required>
+            <label for="tanggal_rilis">Tanggal Rilis:</label>
+            <input type="date" id="tanggal_rilis" name="tanggal_rilis" required>
+            <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full">SUBMIT</button>
+        </form>
+    </div>
+</div>
+{% endblock content %}

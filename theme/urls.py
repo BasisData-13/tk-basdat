@@ -31,5 +31,14 @@ urlpatterns = [
     path('r_play_podcast', show_r_play_podcast, name='r_play_podcast'),
     path('ru_melihat_chart', show_ru_melihat_chart, name='ru_melihat_chart'),
     path('ru_melihat_chart_detail', show_ru_melihat_chart_detail, name='ru_melihat_chart_detail'),
-    path('crud_kelola_podcast', show_crud_kelola_podcast, name='crud_kelola_podcast')
+    path('crud_kelola_podcast', show_crud_kelola_podcast, name='crud_kelola_podcast'),
+    path('play_podcast/<int:podcast_id>/', show_r_play_podcast, name='play_podcast'),
+    path('charts/', show_ru_melihat_chart, name='ru_melihat_chart'),
+    path('charts/<str:chart_type>/', show_ru_melihat_chart_detail, name='ru_melihat_chart_detail'),
+    path('crud_kelola_podcast/', show_crud_kelola_podcast, name='show_crud_kelola_podcast'),
+    path('delete_podcast/<uuid:podcast_id>/', delete_podcast, name='delete_podcast'),
+    path('create_podcast/', create_podcast, name='create_podcast'),
+    path('create_episode/<uuid:podcast_id>/', create_episode, name='create_episode'),
+    path('podcast_detail/<uuid:podcast_id>/', show_podcast_detail, name='show_podcast_detail'),
+
 ]

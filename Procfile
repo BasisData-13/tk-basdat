@@ -1,1 +1,1 @@
-web: gunicorn 'marmut.wsgi'
+web: gunicorn 'marmut.wsgi' --log-file -

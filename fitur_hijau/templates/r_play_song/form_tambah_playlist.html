@@ -14,7 +14,7 @@
                 <tr> 
                     <th colspan="5" class="text-center border-b border-gray-300 bg-gray-100 px-4 py-2">
                         ADD SONG TO USER PLAYLIST
-                        <form method="POST" action="{% url 'fitur_hijau:action_tambah' playlist_id=playlists.1.1 song_id=songs.id %}">
+                        <form method="POST" action="{% url 'fitur_hijau:r_play_song_tambah_lagu_clear' %}">
                             {% csrf_token %}
                             <div class="text-left">
                                 <p>Judul: {{ songs.judul }}</p>

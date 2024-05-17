@@ -55,15 +55,22 @@
                         <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
                             Lihat
                         </button>
-                        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
-                            Play
-                        </button>
-                        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
-                            Hapus
-                        </button>
+                        
+                        <a href="{% url 'fitur_hijau:play_song_main' song_id=song.3 %}">
+                            <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                                Play
+                            </button>
+                        </a>
+                        
+                        <a href="{% url 'fitur_hijau:hapus_lagu' playlist_id=playlist.id song_id=song.3 %}">
+                            <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                                Hapus
+                            </button>
+                        </a>
                     </td>
                 </tr>
                 {% endfor %}
+
                 {% if not songs %}
                 <tr>
                     <td colspan="4" class="border border-gray-300 px-4 py-2 text-center">Tidak ada lagu dalam playlist ini.</td>
@@ -71,11 +78,13 @@
                 {% endif %}
             </tbody>
         </table>
-        <a href="{% url 'fitur_hijau:crud_kelola_playlist_tambah_lagu' %}">
+
+        <a href="{% url 'fitur_hijau:tambah_lagu' playlist_id=playlist.id %}">
             <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-[10px]" type="button">
                 Tambah Lagu
             </button>
         </a>
+
     </div>
 </body>
 {% endblock content %}

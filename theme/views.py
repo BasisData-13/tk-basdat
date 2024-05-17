@@ -13,6 +13,9 @@ def login_user(request):
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
+        is_artist = False
+        is_songwriter = False
+        is_podcaster = False
 
         with connection.cursor() as cursor:
             cursor.execute("SET search_path to MARMUT;")
@@ -44,7 +47,7 @@ def login_user(request):
                     """, [email]
                 )
                 if cursor.fetchone()[0]:
-                    role = 'artist'
+                    is_artist = True
 
                 # Check if the user is a songwriter
                 cursor.execute(
@@ -57,7 +60,7 @@ def login_user(request):
                     """, [email]
                 )
                 if cursor.fetchone()[0]:
-                    role = 'songwriter'
+                    is_songwriter = True
 
                 # Check if the user is a podcaster
                 cursor.execute(
@@ -70,17 +73,16 @@ def login_user(request):
                     """, [email]
                 )
                 if cursor.fetchone()[0]:
-                    role = 'podcaster'
-
-                # Default to 'user' if no specific role found
-                if not role:
-                    role = 'user'
+                    is_podcaster = True                
 
                 response = HttpResponseRedirect(reverse("theme:landing_page"))
                 response.set_cookie('last_login', str(datetime.datetime.now()))
                 response.set_cookie('is_authenticated', 'True')
                 response.set_cookie('user_email', email)
-                response.set_cookie('user_role', role)
+                response.set_cookie('user_role', 'pengguna')
+                response.set_cookie('is_artist', is_artist)
+                response.set_cookie('is_songwriter', is_songwriter)
+                response.set_cookie('is_podcaster', is_podcaster)
                 return response
             else:
                 # Check LABEL table
@@ -102,6 +104,9 @@ def login_user(request):
                     response.set_cookie('is_authenticated', 'True')
                     response.set_cookie('user_email', email)
                     response.set_cookie('user_role', 'label')
+                    response.set_cookie('is_artist', False)
+                    response.set_cookie('is_songwriter', False)
+                    response.set_cookie('is_podcaster', False)
                     return response
 
             messages.info(request, 'Sorry, incorrect email or password. Please try again.')

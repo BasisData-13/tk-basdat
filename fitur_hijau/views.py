@@ -308,24 +308,41 @@ def action_tambah(request, playlist_id, song_id):
 
     return render(request, 'r_play_song/form_tambah_playlist.html', context)
 
+def shuffle_play(request, playlist_id):
+    id_user_playlist = playlist_id
+    email_pembuat = request.COOKIES.get('user_email')
+    email_pemain = request.COOKIES.get('user_email')
+    waktu = datetime.datetime.now()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        SET search_path to MARMUT;
+        SELECT APUP.email_pembuat
+        FROM USER_PLAYLIST UP
+        JOIN AKUN_PLAY_USER_PLAYLIST APUP ON APUP.email_pembuat = UP.email_pembuat
+        WHERE UP.id_playlist = %s
+        """, [playlist_id]
+    )
+
+    cursor.execute(
+        """
+        SET search_path TO MARMUT;
+        INSERT INTO AKUN_PLAY_USER_PLAYLIST(email_pemain, id_user_playlist, email_pembuat, waktu)
+        VALUES (%s, %s, %s, %s)
+        """,
+        [email_pemain, id_user_playlist, email_pembuat, waktu]
+    )
+
+    cursor.execute(
+        """
+        SET search_path to MARMUT;
+        INSERT INTO AKUN_PLAY_SONG()
+        """
+    )
+
+    return detail_playlist(request, playlist_id)
     
-
-def show_r_play_song_main(request):
-    return render(request, "r_play_song/main.html")
-
-def show_r_play_song_tambah_playlist(request):
-    return render(request, "r_play_song/form_tambah_playlist.html")
-
-def show_r_play_song_download_lagu(request):
-    return render(request, 'r_play_song/download_lagu.html')
 
 def show_r_play_song_tambah_lagu_clear(request):
     return render(request, 'r_play_song/tambah_lagu_clear.html')
-
-
-
-
-
-# R Play Playlist
-def show_r_play_playlist(request):
-    return render(request, 'r_play_playlist/main.html')

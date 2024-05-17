@@ -19,12 +19,8 @@ urlpatterns = [
     path('play_button/<uuid:song_id>/', play_button, name='play_button'),
     path('tambah_ke_playlist/<uuid:song_id>/', tambah_ke_playlist, name='tambah_ke_playlist'),
     path('action_tambah/<uuid:playlist_id>/<uuid:song_id>/', action_tambah, name='action_tambah'),
-
-    path('r_play_song_main', show_r_play_song_main, name='r_play_song_main'),
-    path('r_play_song_tambah_playlist', show_r_play_song_tambah_playlist, name='r_play_song_tambah_playlist'),
-    path('r_play_song_download_lagu', show_r_play_song_download_lagu, name='r_play_song_download_lagu'),
     path('r_play_song_tambah_lagu_clear', show_r_play_song_tambah_lagu_clear, name='r_play_song_tambah_lagu_clear'),
 
     # R PLAY USER PLAYLIST
-    path('r_play_playlist_main', show_r_play_playlist, name='r_play_playlist_main'),
+    path('shuffle_play/<uuid:playlist_id>/', shuffle_play, name='shuffle_play'),
 ]

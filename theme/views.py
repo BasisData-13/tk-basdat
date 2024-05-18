@@ -122,6 +122,7 @@ def login_user(request):
                     response.set_cookie('is_artist', False)
                     response.set_cookie('is_songwriter', False)
                     response.set_cookie('is_podcaster', False)
+                    response.set_cookie('is_premium', False)
                     return response
 
             messages.info(request, 'Sorry, incorrect email or password. Please try again.')

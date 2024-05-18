@@ -15,47 +15,51 @@
                     <th colspan="5" class="text-center border-b border-gray-300 bg-gray-100 px-4 py-2">
                         SONG DETAIL
                         <div class="text-left">
-                            <p>Judul: {{ judul }}</p>
+                            <p>Judul: {{ songs.judul }}</p>
                             <p>Genre(s):</p>
                             <ul>
-                                <li>- {{ genre }}</li>
+                                <li>- {{ songs.genre }}</li>
                             </ul>
-                            <p>Artist: {{ artist }}</p>
+                            <p>Artist: {{ songs.artist }}</p>
                             <p>Songwriter(s):</p>
                             <ul>
-                                {% for songwriter in songwriters %}
+                                {% for songwriter in songs.songwriters %}
                                 <li>- {{ songwriter }}</li>
                                 {% endfor %}
                             </ul>
-                            <p>Durasi: {{ durasi }} menit</p>
-                            <p>Tanggal Rilis: {{ tanggal_rilis|date:"d/m/Y" }}</p>
-                            <p>Tahun: {{ tahun }}</p>
-                            <p>Total Play: {{ total_play }}</p>
-                            <p>Total Downloads: {{ total_download }}</p>
-                            <p>Album: {{ album }}</p>
+                            <p>Durasi: {{ songs.durasi }} menit</p>
+                            <p>Tanggal Rilis: {{ songs.tanggal_rilis|date:"d/m/Y" }}</p>
+                            <p>Tahun: {{ songs.tahun }}</p>
+                            <p>Total Play: {{ songs.total_play }}</p>
+                            <p>Total Downloads: {{ songs.total_download }}</p>
+                            <p>Album: {{ songs.album }}</p>
                         </div>
                         <div class="grid grid-row-5 gap-2 mt-2">
 
-                            <form method="POST" action="{% url 'fitur_hijau:play_button' song_id=id %}">
-                            <div>
-                                <input type="range" name="range_input">
-                            </div>
-                            <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit" value="submit">
-                                Play
-                            </button>
+                            <form method="POST" action="{% url 'fitur_hijau:play_button' song_id=songs.id %}">
+                                <div class="w-full">
+                                    <input type="range" name="range_input" class="w-full range-input">
+                                </div>
+                                <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit" value="submit">
+                                    Play
+                                </button>
                             </form>
                             
-                            <a href="{% url 'fitur_hijau:tambah_ke_playlist' song_id=id %}">
+                            <a href="{% url 'fitur_hijau:tambah_ke_playlist' song_id=songs.id %}">
                                 <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
                                     Add to Playlist
                                 </button>
                             </a>
-                            <a href="{% url 'fitur_hijau:r_play_song_download_lagu' %}">
+
+                            {% if is_premium %}
+                            <a href="{% url 'fitur_hijau:download_song' song_id=songs.id %}">
                                 <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
                                     Download
                                 </button>
                             </a>
-                            <a href="{% url 'theme:landing_page' %}">
+                            {% endif %}
+                            
+                            <a href="{% url 'fitur_hijau:crud_kelola_playlist_main' %}">
                                 <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
                                     Kembali
                                 </button>
@@ -65,6 +69,14 @@
                 </tr>
             </thead>
         </table>
+        
+        {% if messages %}
+            <ul class="text-white mt-1">
+                {% for message in messages %}
+                    <li><strong>{{ message }}</strong></li>
+                {% endfor %}
+            </ul>
+        {% endif %}
     </div>
 </body>
 {% endblock content %}

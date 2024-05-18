@@ -15,10 +15,6 @@ RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-r
 RUN addgroup --system django \
     && adduser --system --ingroup django django
 
-# Requirements are installed here to ensure they will be cached.
-COPY ./requirements.txt /requirements.txt
-RUN pip install -r /requirements.txt
-
 # Copy project code
 COPY . .
 

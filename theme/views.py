@@ -16,6 +16,7 @@ def login_user(request):
         is_artist = False
         is_songwriter = False
         is_podcaster = False
+        is_premium = False
 
         with connection.cursor() as cursor:
             cursor.execute("SET search_path to MARMUT;")
@@ -73,7 +74,20 @@ def login_user(request):
                     """, [email]
                 )
                 if cursor.fetchone()[0]:
-                    is_podcaster = True                
+                    is_podcaster = True
+                
+                # Check if account is premium
+                cursor.execute(
+                    """
+                    SELECT EXISTS(
+                        SELECT 1
+                        FROM premium
+                        WHERE email = %s
+                    )
+                    """, [email]
+                )
+                if cursor.fetchone()[0]:
+                    is_premium = True                
 
                 response = HttpResponseRedirect(reverse("theme:landing_page"))
                 response.set_cookie('last_login', str(datetime.datetime.now()))
@@ -83,6 +97,7 @@ def login_user(request):
                 response.set_cookie('is_artist', is_artist)
                 response.set_cookie('is_songwriter', is_songwriter)
                 response.set_cookie('is_podcaster', is_podcaster)
+                response.set_cookie('is_premium', is_premium)
                 return response
             else:
                 # Check LABEL table

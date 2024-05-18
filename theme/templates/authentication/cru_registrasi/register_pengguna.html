@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+    <title>Register</title>
+{% endblock meta %}
+
+{% block content %}  
+
+<div class = "login flex justify-center items-center flex-col">
+
+    <form class="mt-2 mb-2 max-w-xl w-full bg-gray-100 p-5 rounded-lg dark:bg-gray-800 dark:border-gray-700" method="POST" action="">
+
+        {% csrf_token %}
+    
+        <div>
+            <label class="block text-white font-bold" for="id_username">Username</label>
+            <input type="text" name="username" id="id_username" class="form-control bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" required placeholder="Username"/>
+        </div>
+
+        <div>
+            <label class="block text-white font-bold mt-4" for="id_email">Email</label>
+            <input type="text" name="email" id="id_email" class="form-control bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" required placeholder="Email"/>
+        </div>
+
+        <label for="gender" class="block text-white font-bold mt-4">Gender</label>
+        <select name='gender' id="gender" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            <option selected>Pilih Gender</option>
+            <option value="1">Laki-laki</option>
+            <option value="0">Perempuan</option>
+        </select>
+
+        <div class="mt-4">
+            <label class="block text-white font-bold mb-2">Tempat Lahir</label>
+            <input type="text" name="tempat_lahir" id="tempat_lahir" class="form-control bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" required placeholder="Tempat Lahir"/>
+        </div>
+
+        <div class="mt-4">
+            <label class="block text-white font-bold mb-2">Tanggal Lahir</label>
+            <input type="date" name="tanggal_lahir" id="tanggal_lahir" class="form-control bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" required placeholder="Tanggal Lahir"/>
+        </div>
+
+        <div class="mt-4">
+            <label class="block text-white font-bold mb-2">Kota Asal</label>
+            <input type="text" name="kota_asal" id="kota_asal" class="form-control bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" required placeholder="Tempat Lahir"/>
+        </div>
+    
+        <div class="mt-4">
+            <label class="block text-white font-bold mb-2" for="password">Password</label>
+            <input type="password" name="password" id="password" class="form-control bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-300 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" required placeholder="Password"/>
+        </div>
+
+        <div class="mt-4">
+            <label class="block text-white font-bold mb-2">Role</label>
+            <div class="flex items-center mb-4">
+                <input type="checkbox" name="roles" value="podcaster" id="podcaster" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                <label for="podcaster" class="ms-2 text-sm text-white font-medium text-gray-900 dark:text-gray-300">Podcaster</label>
+            </div>
+            <div class="flex items-center mb-4">
+                <input type="checkbox" name="roles" value="artist" id="artist" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                <label for="artist" class="ms-2 text-sm text-white font-medium text-gray-900 dark:text-gray-300">Artist</label>
+            </div>
+            <div class="flex items-center mb-4">
+                <input type="checkbox" name="roles" value="songwriter" id="songwriter" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                <label for="songwriter" class="ms-2 text-sm text-white font-medium text-gray-900 dark:text-gray-300">Songwriter</label>
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <button
+                type="submit"
+                name="submit"
+                value="Daftar"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+                Daftar
+            </button>
+        </div>
+    
+    </form>
+    
+
+</div>  
+
+{% endblock content %}

@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+    <title>Kelola User Playlist Detail</title>
+{% endblock meta %}
+
+{% block content %}
+<body class="bg-gray-100">
+    <!-- List Album Table -->
+    <div class="container mx-auto my-8 flex items-center justify-center flex-col">
+        <table class="min-w-full border border-gray-300">
+            <thead>
+                <tr> 
+                    <th colspan="5" class="text-center border-b border-gray-300 bg-gray-100 px-4 py-2">
+                        USER PLAYLIST DETAIL
+                        <div class="text-left">
+                            <p>Judul: {{ playlist.judul }}</p>
+                            <p>Pembuat: {{ playlist.nama }}</p>
+                            <p>Jumlah Lagu: {{ playlist.jumlah_lagu }}</p>
+                            <p>Total Durasi: {{ playlist.total_durasi }} menit</p>
+                            <p>Tanggal Dibuat: {{ playlist.tanggal_dibuat }}</p>
+                            <p>Deskripsi: {{ playlist.deskripsi }}</p>
+                        </div>
+                        <div class="grid grid-row-2 gap-2 mt-2">
+                            <a>
+                                <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                                    Shuffle Play
+                                </button>
+                            </a>
+                            <a href="{% url 'fitur_hijau:crud_kelola_playlist_main' %}">
+                                <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                                    Kembali
+                                </button>
+                            </a>
+                        </div>
+                    </th>
+                </tr>
+                <tr>
+                    <th colspan="5" class="text-center border-b border-gray-300 bg-gray-200 px-4 py-2">USER PLAYLIST</th>
+                </tr>
+                <tr>
+                    <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Judul Lagu</th>
+                    <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Oleh</th>
+                    <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Durasi</th>
+                    <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2 text-left">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for song in songs %}
+                <tr class="bg-gray-600">
+                    <td class="border border-gray-300 px-4 py-2">{{ song.0 }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ song.1 }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ song.2 }} menit</td>
+                    <td class="border border-gray-300 px-4 py-2">
+                        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                            Lihat
+                        </button>
+                        
+                        <a href="{% url 'fitur_hijau:play_song_main' song_id=song.3 %}">
+                            <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                                Play
+                            </button>
+                        </a>
+                        
+                        <a href="{% url 'fitur_hijau:hapus_lagu' playlist_id=playlist.id song_id=song.3 %}">
+                            <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                                Hapus
+                            </button>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+
+                {% if not songs %}
+                <tr>
+                    <td colspan="4" class="border border-gray-300 px-4 py-2 text-center">Tidak ada lagu dalam playlist ini.</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+
+        <a href="{% url 'fitur_hijau:tambah_lagu' playlist_id=playlist.id %}">
+            <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-[10px]" type="button">
+                Tambah Lagu
+            </button>
+        </a>
+
+    </div>
+</body>
+{% endblock content %}

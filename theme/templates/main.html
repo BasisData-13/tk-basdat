@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% load static %}
+
 
 {% block meta %}
     <title>Main</title>
@@ -14,39 +16,27 @@
     <div class="grid grid-cols-4 gap-4 mx-8 mb-8 mt-[20px]">
 
         <!-- FITUR MERAH -->
-        <a href="{% url 'theme:rd_kelola_album_song' %}" class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-500">
+        <a href="{% url 'fitur_merah:rd_kelola_album_song' %}" class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-500">
             <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">RD Kelola Album & Song</h5>
             <p class="font-normal text-gray-700 dark:text-gray-400">Fitur ini memungkinkan label untuk mengelola album yang diproduksi di bawahnya.</p>
         </a>
 
-        <a href="{% url 'theme:crud_album_song' %}" class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-500">
+        <a href="{% url 'fitur_merah:crud_album_song' %}" class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-500">
             <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">CRUD Kelola Album & Song</h5>
             <p class="font-normal text-gray-700 dark:text-gray-400">Fitur ini memungkinkan artist/songwriter untuk mengelola album dan lagu dalam platform Marmut.</p>
         </a>
 
-        <a href="{% url 'theme:r_cek_royalti' %}" class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-500">
-            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">R Cek Royalti</h5>
+        <a href="{% url 'fitur_merah:r_cek_royalti' %}" class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-500">
+            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Cek Royalti</h5>
             <p class="font-normal text-gray-700 dark:text-gray-400">Fitur ini memungkinkan artist/songwriter/label melihat riwayat royalti yang mereka miliki berdasarkan lagu karya mereka.</p>
         </a>
 
-        <!-- FITUR HIJAU -->
-        <a href="{% url 'theme:crud_kelola_playlist_main' %}" class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-500">
-            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">CRUD Kelola User Playlist</h5>
-            <p class="font-normal text-gray-700 dark:text-gray-400">Fitur ini digunakan oleh para pengguna untuk mengelola playlist dalam platform
-                Marmut.</p>
+        <!-- FITUR HIJAU --> 
+        <a href="{% url 'fitur_hijau:crud_kelola_playlist_main' %}" class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-500">
+            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Kelola Playlist</h5>
+            <p class="font-normal text-gray-700 dark:text-gray-400">Fitur ini digunakan oleh para pengguna untuk mengelola playlist dalam platform Marmut.</p>
         </a>
 
-        <a href="{% url 'theme:r_play_song_main' %}" class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-500">
-            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">R Play Song</h5>
-            <p class="font-normal text-gray-700 dark:text-gray-400">Fitur digunakan oleh pengguna untuk melihat deskripsi dari suatu lagu, memainkan nya,
-                menambahkan nya ke playlist, atau mengunduh nya (jika akun premium).</p>
-        </a>
-
-        <a href="{% url 'theme:r_play_playlist_main' %}" class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-500">
-            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">R Play User Playlist</h5>
-            <p class="font-normal text-gray-700 dark:text-gray-400">Fitur digunakan oleh pengguna untuk melihat deskripsi dari suatu user playlist, dan
-                melihat daftar lagu yang ada didalamnya.</p>
-        </a>
 
         <!-- FITUR KUNING -->
         <a href="{% url 'theme:cr_langganan_paket_main' %}" class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-500">

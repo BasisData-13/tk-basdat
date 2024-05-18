@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+    <title>Cek Royalti</title>
+{% endblock meta %}
+
+{% block content %}
+
+<body class="bg-gray-100">
+
+    <!-- List Royalti Table -->
+    <div class="container mx-auto my-8">
+        <table class="min-w-full border-collapse border border-gray-300">
+            <thead>
+                <tr>
+                    <th colspan="5" class="text-center border-b border-gray-300 bg-gray-200 px-4 py-2">LIST ROYALTI</th>
+                </tr>
+                <tr>
+                    <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2">Judul Lagu</th>
+                    <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2">Judul Album</th>
+                    <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2">Total Play</th>
+                    <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2">Total Download</th>
+                    <th class="text-center border border-gray-300 bg-gray-400 px-4 py-2">Total Royalti Didapat</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for royalty in royalties %}
+                <tr>
+                    <td class="border border-gray-300 bg-gray-600 text-white px-4 py-2">{{ royalty.judul_lagu }}</td>
+                    <td class="border border-gray-300 bg-gray-600 text-white px-4 py-2">{{ royalty.judul_album }}</td>
+                    <td class="border border-gray-300 bg-gray-600 text-white px-4 py-2">{{ royalty.total_play }}</td>
+                    <td class="border border-gray-300 bg-gray-600 text-white px-4 py-2">{{ royalty.total_download }}</td>
+                    <td class="border border-gray-300 bg-gray-600 text-white px-4 py-2">Rp.{{ royalty.total_royalti }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</body>
+{% endblock content %}

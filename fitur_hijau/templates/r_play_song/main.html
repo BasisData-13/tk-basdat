@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>Play Song Main</title>
+{% endblock meta %}
+
+{% block content %}
+<body class="bg-gray-100">
+    <!-- List Album Table -->
+    <div class="container mx-auto my-8 flex items-center justify-center flex-col">
+        <table class="min-w-full border border-gray-300">
+            <thead>
+                <tr>
+                    <th colspan="5" class="text-center border-b border-gray-300 bg-gray-100 px-4 py-2">
+                        SONG DETAIL
+                        <div class="text-left">
+                            <p>Judul: {{ judul }}</p>
+                            <p>Genre(s):</p>
+                            <ul>
+                                <li>- {{ genre }}</li>
+                            </ul>
+                            <p>Artist: {{ artist }}</p>
+                            <p>Songwriter(s):</p>
+                            <ul>
+                                {% for songwriter in songwriters %}
+                                <li>- {{ songwriter }}</li>
+                                {% endfor %}
+                            </ul>
+                            <p>Durasi: {{ durasi }} menit</p>
+                            <p>Tanggal Rilis: {{ tanggal_rilis|date:"d/m/Y" }}</p>
+                            <p>Tahun: {{ tahun }}</p>
+                            <p>Total Play: {{ total_play }}</p>
+                            <p>Total Downloads: {{ total_download }}</p>
+                            <p>Album: {{ album }}</p>
+                        </div>
+                        <div class="grid grid-row-5 gap-2 mt-2">
+
+                            <form method="POST" action="{% url 'fitur_hijau:play_button' song_id=id %}">
+                            <div>
+                                <input type="range" name="range_input">
+                            </div>
+                            <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit" value="submit">
+                                Play
+                            </button>
+                            </form>
+                            
+                            <a href="{% url 'fitur_hijau:tambah_ke_playlist' song_id=id %}">
+                                <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                                    Add to Playlist
+                                </button>
+                            </a>
+                            <a href="{% url 'fitur_hijau:r_play_song_download_lagu' %}">
+                                <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                                    Download
+                                </button>
+                            </a>
+                            <a href="{% url 'theme:landing_page' %}">
+                                <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                                    Kembali
+                                </button>
+                            </a>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</body>
+{% endblock content %}

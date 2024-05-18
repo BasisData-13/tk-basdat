@@ -1,111 +1,260 @@
 import datetime
 import uuid
+import random
 from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
-from django import forms
 from django.contrib import messages  
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.db import connection
 
     
 
-@login_required(login_url='/login')
-def show_main(request):
-    return render(request, "main.html")
+# AUTHENTICATION
+def login_user(request):
+    context = {"error": ""}
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        is_artist = False
+        is_songwriter = False
+        is_podcaster = False
+
+        with connection.cursor() as cursor:
+            cursor.execute("SET search_path to MARMUT;")
+            # Check AKUN table
+            cursor.execute(
+                """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM AKUN
+                    WHERE email = %s
+                    AND password = %s
+                )
+                """, [email, password]
+            )
+            result_akun = cursor.fetchone()
+
+            if result_akun and result_akun[0]:  # If AKUN table query returns true
+                # Determine role by checking related tables
+                role = None
+
+                # Check if the user is an artist
+                cursor.execute(
+                    """
+                    SELECT EXISTS (
+                        SELECT 1
+                        FROM artist
+                        WHERE email_akun = %s
+                    )
+                    """, [email]
+                )
+                if cursor.fetchone()[0]:
+                    is_artist = True
+
+                # Check if the user is a songwriter
+                cursor.execute(
+                    """
+                    SELECT EXISTS (
+                        SELECT 1
+                        FROM songwriter
+                        WHERE email_akun = %s
+                    )
+                    """, [email]
+                )
+                if cursor.fetchone()[0]:
+                    is_songwriter = True
+
+                # Check if the user is a podcaster
+                cursor.execute(
+                    """
+                    SELECT EXISTS (
+                        SELECT 1
+                        FROM podcaster
+                        WHERE email = %s
+                    )
+                    """, [email]
+                )
+                if cursor.fetchone()[0]:
+                    is_podcaster = True                
+
+                response = HttpResponseRedirect(reverse("theme:landing_page"))
+                response.set_cookie('last_login', str(datetime.datetime.now()))
+                response.set_cookie('is_authenticated', 'True')
+                response.set_cookie('user_email', email)
+                response.set_cookie('user_role', 'pengguna')
+                response.set_cookie('is_artist', is_artist)
+                response.set_cookie('is_songwriter', is_songwriter)
+                response.set_cookie('is_podcaster', is_podcaster)
+                return response
+            else:
+                # Check LABEL table
+                cursor.execute(
+                    """
+                    SELECT EXISTS (
+                        SELECT 1
+                        FROM LABEL
+                        WHERE email = %s
+                        AND password = %s
+                    )
+                    """, [email, password]
+                )
+                result_label = cursor.fetchone()
+
+                if result_label and result_label[0]:  # If LABEL table query returns true
+                    response = HttpResponseRedirect(reverse("theme:landing_page"))
+                    response.set_cookie('last_login', str(datetime.datetime.now()))
+                    response.set_cookie('is_authenticated', 'True')
+                    response.set_cookie('user_email', email)
+                    response.set_cookie('user_role', 'label')
+                    response.set_cookie('is_artist', False)
+                    response.set_cookie('is_songwriter', False)
+                    response.set_cookie('is_podcaster', False)
+                    return response
+
+            messages.info(request, 'Sorry, incorrect email or password. Please try again.')
+
+    return render(request, 'authentication/login.html', context)
 
 
 def register_pengguna(request):
-    form = UserCreationForm()
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        nama = request.POST.get('username')
+        gender = request.POST.get('gender')
+        tempat_lahir = request.POST.get('tempat_lahir')
+        tanggal_lahir = request.POST.get('tanggal_lahir')
+        kota_asal = request.POST.get('kota_asal')
 
-    if request.method == "POST":
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
+        # periksa role dan tentukan isVerified
+        roles = request.POST.getlist('roles')
+        is_podcaster = 'podcaster' in roles
+        is_artist = 'artist' in roles
+        is_songwriter = 'songwriter' in roles
+        
+        
+        if is_podcaster or is_artist or is_songwriter:
+            is_verified = 'True'
+        else:
+            is_verified = 'False'
+
+        cursor = connection.cursor()
+        try:
+            cursor.execute(
+                """
+                SET search_path to MARMUT;
+                INSERT INTO AKUN(email, password, nama, gender, tempat_lahir, tanggal_lahir, kota_asal, is_verified)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                """, (email, password, nama, gender, tempat_lahir, tanggal_lahir, kota_asal, is_verified)
+            )
+            
+            if is_podcaster:
+                cursor.execute(
+                    """
+                    SET search_path to MARMUT;
+                    INSERT INTO PODCASTER
+                    VALUES (%s)
+                    """, (email,)
+                )
+                
+            if is_artist:
+                uuid_artist = str(uuid.uuid4())
+                uuid_hak_cipta = str(uuid.uuid4())
+                rate_royalti = random.randint(1, 11) 
+                cursor.execute(
+                    """
+                    SET search_path to MARMUT;
+                    INSERT INTO PEMILIK_HAK_CIPTA
+                    VALUES (%s, %s)
+                    """, (uuid_hak_cipta, rate_royalti)
+                )
+                cursor.execute(
+                    """
+                    SET search_path to MARMUT;
+                    INSERT INTO ARTIST
+                    VALUES (%s,%s,%s)
+                    """, (uuid_artist,email,uuid_hak_cipta)
+                )
+                
+            if is_songwriter:
+                uuid_songwriter = str(uuid.uuid4())
+                uuid_hak_cipta = str(uuid.uuid4())
+                rate_royalti = random.randint(1, 11)
+                
+                cursor.execute(
+                    """
+                    SET search_path to MARMUT;
+                    INSERT INTO PEMILIK_HAK_CIPTA
+                    VALUES (%s, %s)
+                    """, (uuid_hak_cipta, rate_royalti)
+                )
+                
+                cursor.execute(
+                    """
+                    SET search_path to MARMUT;
+                    INSERT INTO SONGWRITER
+                    VALUES (%s,%s,%s)
+                    """, (uuid_songwriter,email,uuid_hak_cipta)
+                )
+
             messages.success(request, 'Your account has been successfully created!')
-            return redirect('theme:login')
-    context = {'form':form}
-    return render(request, 'cru_registrasi/register_pengguna.html', context)
+            return HttpResponseRedirect(reverse('theme:login'))
+        except Exception as e:
+            print(e)
+
+    return render(request, 'authentication/cru_registrasi/register_pengguna.html')
 
 def register_label(request):
-    form = UserCreationForm()
-
-    if request.method == "POST":
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Your account has been successfully created!')
-            return redirect('theme:login')
-    context = {'form':form}
-    return render(request, 'cru_registrasi/register_label.html', context)
-
-def register_main(request):
-    return render(request, 'cru_registrasi/main.html')
-
-
-def login_user(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
+        email = request.POST.get('email')
         password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            response = HttpResponseRedirect(reverse("theme:show_main")) 
-            response.set_cookie('last_login', str(datetime.datetime.now()))
-            return response
-        else:
-            messages.info(request, 'Sorry, incorrect username or password. Please try again.')
-    context = {}
-    return render(request, 'login.html', context)
+        nama = request.POST.get('username')
+        kontak = request.POST.get('kontak')
 
+        # random generate id
+        uuid_hak_cipta = str(uuid.uuid4())
+        uuid_label = str(uuid.uuid4())
+        rate_royalti = random.randint(1, 11)
+
+        cursor = connection.cursor()
+        try:
+            cursor.execute(
+                """
+                SET search_path to MARMUT;
+                INSERT INTO PEMILIK_HAK_CIPTA
+                VALUES (%s, %s)
+                """, (uuid_hak_cipta, rate_royalti)
+            )
+            
+            cursor.execute(
+                """
+                SET search_path to MARMUT;
+                INSERT INTO LABEL(id, nama, email, password, kontak, id_pemilik_hak_cipta)
+                VALUES (%s, %s, %s, %s, %s, %s)
+                """, (uuid_label, nama, email, password, kontak, uuid_hak_cipta)
+            )
+            messages.success(request, 'Your account has been successfully created!')
+            return HttpResponseRedirect(reverse('theme:login'))
+        except Exception as e:
+            print(e)
+
+    return render(request, 'authentication/cru_registrasi/register_label.html')
 
 def logout_user(request):
-    logout(request)
     response = HttpResponseRedirect(reverse('theme:login'))
     response.delete_cookie('last_login')
+    response.set_cookie('is_authenticated', '')
     return response
+    
+def show_main(request):
+    return render(request, "authentication/login.html")
 
-def show_crud_album_song(request):
-    return render(request, "crud_album_song.html")
+def landing_page(request):
+    return render(request, 'main.html')
 
-def show_r_cek_royalti(request):
-    return render(request, "r_cek_royalti.html")
+def register_main(request):
+    return render(request, 'authentication/cru_registrasi/main.html')
 
-def show_rd_kelola_album_song(request):
-    return render(request, "rd_kelola_album_song.html")
-
-# CRUD Kelola User Playlist
-def show_crud_kelola_playlist_main(request):
-    return render(request, "crud_kelola_playlist/main.html")
-
-def show_crud_kelola_playlist_detail(request):
-    return render(request, "crud_kelola_playlist/detail.html")
-
-def show_crud_kelola_playlist_tambah_lagu(request):
-    return render(request, "crud_kelola_playlist/form_tambah_lagu.html")
-
-def show_crud_kelola_playlist_tambah_playlist(request):
-    return render(request, "crud_kelola_playlist/form_tambah_playlist.html")
-
-# R Play Song
-def show_r_play_song_main(request):
-    return render(request, "r_play_song/main.html")
-
-def show_r_play_song_tambah_playlist(request):
-    return render(request, "r_play_song/form_tambah_playlist.html")
-
-def show_r_play_song_download_lagu(request):
-    return render(request, 'r_play_song/download_lagu.html')
-
-def show_r_play_song_tambah_lagu_clear(request):
-    return render(request, 'r_play_song/tambah_lagu_clear.html')
-
-# R Play Playlist
-def show_r_play_playlist(request):
-    return render(request, 'r_play_playlist/main.html')
 
 # CR Langganan 
 def show_cr_langganan_paket_main(request):
@@ -177,7 +326,7 @@ def show_ru_melihat_chart_detail(request, chart_type):
             SET search_path to MARMUT;
             SELECT 
                 k.judul AS song_title,
-                a.name AS artist_name,
+                a.nama AS artist_name,
                 k.tanggal_rilis AS release_date,
                 s.total_play AS total_plays
             FROM 
@@ -191,7 +340,7 @@ def show_ru_melihat_chart_detail(request, chart_type):
             JOIN
                 KONTEN k ON s.id_konten = k.id
             JOIN 
-                AKUN a ON ar.email = a.email
+                AKUN a ON ar.email_akun = a.email
             WHERE 
                 c.tipe = %s
             ORDER BY 
@@ -255,6 +404,8 @@ def create_podcast(request):
                 ''', [id_konten, genre])
 
         return redirect('show_crud_kelola_podcast')
+    else:
+        return render(request, 'create_podcast.html')
 
 def delete_podcast(request, podcast_id):
     with connection.cursor() as cursor:

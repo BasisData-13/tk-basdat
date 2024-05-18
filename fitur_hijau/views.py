@@ -390,3 +390,89 @@ def download_song(request, song_id):
 
     
     return render(request, 'r_play_song/main.html', {'songs': get_song_context(song_id), 'is_premium': is_premium})
+
+def shuffle_play(request, playlist_id):
+    email = request.COOKIES.get('user_email')
+    waktu = datetime.datetime.now()
+
+    cursor = connection.cursor()
+    cursor.execute(
+        """
+        SET search_path to MARMUT;
+        SELECT email_pembuat, id_user_playlist
+        FROM USER_PLAYLIST
+        WHERE id_playlist = %s
+        """, [playlist_id]
+    )
+    result = cursor.fetchone()
+    email_pembuat = result[0]
+    id_user_playlist = result[1]
+    cursor.execute(
+        """
+        SET search_path to MARMUT;
+        INSERT INTO AKUN_PLAY_USER_PLAYLIST(email_pemain, id_user_playlist, email_pembuat, waktu)
+        VALUES (%s, %s, %s, %s)
+        """, [email, id_user_playlist, email_pembuat, waktu]
+    )
+
+    cursor.execute(
+        """
+        SET search_path TO MARMUT;
+        SELECT ps.id_song
+        FROM USER_PLAYLIST up
+        JOIN PLAYLIST_SONG ps ON up.id_playlist = ps.id_playlist
+        WHERE up.id_playlist = %s
+        """,
+        [playlist_id]
+    )
+    song_ids = [row[0] for row in cursor.fetchall()]
+
+    # Insert records into AKUN_PLAY_SONG for each song
+    for song_id in song_ids:
+        cursor.execute(
+            """
+            SET search_path TO MARMUT;
+            INSERT INTO AKUN_PLAY_SONG(email_pemain, id_song, waktu)
+            VALUES (%s, %s, %s)
+            """,
+            [email, song_id, waktu]
+        )
+
+    cursor.execute("""
+        SET search_path to MARMUT;
+        SELECT AKUN.nama, UP.judul, UP.deskripsi, UP.jumlah_lagu, UP.total_durasi, UP.tanggal_dibuat, UP.id_playlist
+        FROM USER_PLAYLIST UP
+        JOIN AKUN ON AKUN.email = UP.email_pembuat
+        WHERE id_playlist = %s
+    """, [playlist_id])
+    playlist = cursor.fetchone()
+    
+    playlist_details = {
+        'nama': playlist[0],
+        'judul': playlist[1],
+        'deskripsi': playlist[2],
+        'jumlah_lagu': playlist[3],
+        'total_durasi': playlist[4],
+        'tanggal_dibuat': playlist[5],
+        'id': playlist[6]
+    }
+
+    cursor.execute("""
+        SET search_path to MARMUT;
+        SELECT konten.judul AS judul, akun.nama AS oleh, konten.durasi AS durasi, konten.id
+        FROM USER_PLAYLIST up
+        JOIN PLAYLIST_SONG ps ON up.id_playlist = ps.id_playlist
+        JOIN SONG s ON ps.id_song = s.id_konten
+        JOIN KONTEN konten ON s.id_konten = konten.id
+        JOIN ARTIST artis ON s.id_artist = artis.id
+        JOIN AKUN akun ON artis.email_akun = akun.email
+        WHERE up.id_playlist = %s
+    """, [playlist_id])
+    songs = cursor.fetchall()
+
+    context = {
+        'songs': songs,
+        'playlist': playlist_details   
+    }
+
+    return render(request, 'crud_kelola_playlist/detail.html', context)

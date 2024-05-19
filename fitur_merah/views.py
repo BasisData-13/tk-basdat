@@ -8,21 +8,12 @@ def get_all_royalti(request):
     cursor = connection.cursor()
     role = request.COOKIES.get('user_role')
     email = request.COOKIES.get('user_email')
-    kumpulan_id = []
     royalties = []
     id_pemilik_hak_cipta = None
     
     if role != 'label':
         if request.COOKIES.get('is_songwriter') == 'True':
             id_pemilik_hak_cipta = get_id_hak_cipta(request,get_songwriter_id(request,email),"songwriter")
-            kumpulan_id.append(id_pemilik_hak_cipta)
-        if request.COOKIES.get('is_artist') == 'True':
-            id_pemilik_hak_cipta = get_id_hak_cipta(request,get_artist_id(request,email),"artist")
-            kumpulan_id.append(id_pemilik_hak_cipta)
-            
-        print(kumpulan_id)
-            
-        for id in kumpulan_id:
             cursor.execute(
                 '''
                 SET search_path to MARMUT;
@@ -67,10 +58,58 @@ def get_all_royalti(request):
                     r.id_pemilik_hak_cipta = %s
                 ORDER BY 
                     k.judul;
-                ''', [id]
+                ''', [id_pemilik_hak_cipta]
             )
             royalties += cursor.fetchall()
             print(royalties)
+        if request.COOKIES.get('is_artist') == 'True':
+            id_pemilik_hak_cipta = get_id_hak_cipta(request,get_artist_id(request,email),"artist")
+            id = get_artist_id(request,email)
+            cursor.execute(
+                '''
+                SET search_path to MARMUT;
+                WITH updated_royalties AS (
+                    UPDATE ROYALTI
+                    SET jumlah = subquery.total_play * subquery.rate_royalti
+                    FROM (
+                        SELECT 
+                            r.id_song,
+                            s.total_play,
+                            p.rate_royalti
+                        FROM 
+                            ROYALTI r
+                        JOIN 
+                            SONG s ON r.id_song = s.id_konten
+                        JOIN 
+                            PEMILIK_HAK_CIPTA p ON r.id_pemilik_hak_cipta = p.id
+                    ) AS subquery
+                    WHERE ROYALTI.id_song = subquery.id_song
+                    RETURNING ROYALTI.id_song, ROYALTI.jumlah
+                )
+                SELECT DISTINCT
+                    k.judul AS judul_lagu,
+                    a.judul AS judul_album,
+                    s.total_play,
+                    s.total_download,
+                    ur.jumlah AS total_royalti_didapat,
+                    r.id_pemilik_hak_cipta
+                FROM 
+                    SONG s
+                JOIN 
+                    KONTEN k ON s.id_konten = k.id
+                JOIN 
+                    ALBUM a ON s.id_album = a.id
+                JOIN 
+                    ROYALTI ur ON s.id_konten = ur.id_song
+                JOIN
+                    ROYALTI r ON k.id = r.id_song
+                WHERE 
+                    r.id_pemilik_hak_cipta = %s AND s.id_artist = %s
+                ORDER BY 
+                    k.judul;
+                ''', [id_pemilik_hak_cipta,id]
+            )
+            royalties += cursor.fetchall()                        
         return list(set(royalties))
             
     elif role == 'label':

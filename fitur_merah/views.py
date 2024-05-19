@@ -288,6 +288,8 @@ def view_album_action(request, album_id):
             add_song = False
             is_artist = False
             is_songwriter = False
+            artist_id = None
+            songwriter_id = None
             
             if request.COOKIES.get('is_artist') == 'True':
                 is_artist = True
@@ -598,6 +600,8 @@ def show_crud_album_song(request):
     artists = get_artists(request)
     is_artist = False
     is_songwriter = False
+    artist_id = None
+    songwriter_id = None
     
     if request.COOKIES.get('is_artist') == 'True':
         is_artist = True

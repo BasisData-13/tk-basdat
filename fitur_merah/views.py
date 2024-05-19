@@ -77,13 +77,64 @@ def get_all_royalti(request):
         cursor.execute(
             '''
             SET search_path to MARMUT;
-            SELECT id FROM label WHERE nama = %s;
+            SELECT id_pemilik_hak_cipta FROM label WHERE email = %s;
             ''', [email]
         )
         try:
             id_pemilik_hak_cipta = cursor.fetchone()[0]
         except TypeError:
             id_pemilik_hak_cipta = None
+        if id_pemilik_hak_cipta == None:
+            return None
+        else:
+            cursor.execute(
+                '''
+                SET search_path to MARMUT;
+                WITH updated_royalties AS (
+                    UPDATE ROYALTI
+                    SET jumlah = subquery.total_play * subquery.rate_royalti
+                    FROM (
+                        SELECT 
+                            r.id_song,
+                            s.total_play,
+                            p.rate_royalti
+                        FROM 
+                            ROYALTI r
+                        JOIN 
+                            SONG s ON r.id_song = s.id_konten
+                        JOIN 
+                            PEMILIK_HAK_CIPTA p ON r.id_pemilik_hak_cipta = p.id
+                    ) AS subquery
+                    WHERE ROYALTI.id_song = subquery.id_song
+                    RETURNING ROYALTI.id_song, ROYALTI.jumlah
+                )
+                SELECT DISTINCT
+                    k.judul AS judul_lagu,
+                    a.judul AS judul_album,
+                    s.total_play,
+                    s.total_download,
+                    ur.jumlah AS total_royalti_didapat,
+                    r.id_pemilik_hak_cipta
+                FROM 
+                    SONG s
+                JOIN 
+                    KONTEN k ON s.id_konten = k.id
+                JOIN 
+                    ALBUM a ON s.id_album = a.id
+                JOIN 
+                    ROYALTI ur ON s.id_konten = ur.id_song
+                JOIN
+                    SONGWRITER_WRITE_SONG sw ON s.id_konten = sw.id_song
+                JOIN
+                    ROYALTI r ON k.id = r.id_song
+                WHERE 
+                    r.id_pemilik_hak_cipta = %s
+                ORDER BY 
+                    k.judul;
+                ''', [id_pemilik_hak_cipta]
+            )
+            royalties += cursor.fetchall()
+            return list(set(royalties))
         
     
 def get_album(request):
@@ -316,6 +367,8 @@ def addto_album_action(request, album_id):
         add_song = True
         is_artist = False
         is_songwriter = False
+        artist_id = None
+        songwriter_id = None
         
         if request.COOKIES.get('is_artist') == 'True':
             is_artist = True
@@ -408,6 +461,7 @@ def create_song(request,judul,artist_id,songwriters_id,genres,durasi,album_id):
     print(songwriters_id, genres)
     cursor = connection.cursor()
     id_konten = str(uuid.uuid4())
+        
     cursor.execute(
         '''
         SET search_path to MARMUT;
@@ -450,6 +504,15 @@ def create_song(request,judul,artist_id,songwriters_id,genres,durasi,album_id):
         INSERT INTO royalti
         VALUES (%s, %s, 0);
         ''', [artist_id_hak_cipta,id_konten]
+    )
+    
+    label_id = get_album_label_id_hak_cipta(request, album_id)
+    cursor.execute(
+        '''
+        SET search_path to MARMUT;
+        INSERT INTO royalti
+        VALUES (%s, %s, 0);
+        ''', [label_id,id_konten]
     )
     
     for songwriter_id in songwriters_id:
@@ -551,6 +614,20 @@ def get_labels(request):
     )
     labels = cursor.fetchall()
     return labels
+
+def get_album_label_id_hak_cipta(request, album_id):
+    cursor = connection.cursor()
+    cursor.execute(
+        '''
+        SET search_path to MARMUT;
+        SELECT l.id_pemilik_hak_cipta
+        FROM label l
+        JOIN album a ON l.id = a.id_label
+        WHERE a.id = %s;
+        ''', [album_id]
+    )
+    label = cursor.fetchall()
+    return label[0][0]
 
 def get_label_id(request,label_email):
     cursor = connection.cursor()

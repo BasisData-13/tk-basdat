@@ -91,10 +91,6 @@ WSGI_APPLICATION = 'marmut.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
-env = environ.Env()
-environ.Env.read_env()
-
 # Your secret key
 SECRET_KEY = "SECRET_KEY"
 DATABASES = {

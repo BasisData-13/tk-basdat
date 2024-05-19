@@ -1,17 +1,21 @@
 from django.shortcuts import redirect, render
 from django.db import connection
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib import messages  
 import uuid, datetime
 
 # CRUD Kelola User Playlist
 def kelola_user_playlist_main(request):
+    email = request.COOKIES.get('user_email')
+
     cursor = connection.cursor()
     cursor.execute(
         """
         SET search_path to MARMUT;
         SELECT judul, jumlah_lagu, total_durasi, id_playlist
         FROM USER_PLAYLIST UP
-        """
+        WHERE UP.email_pembuat = %s
+        """, [email]
     )
 
     user_playlists = cursor.fetchall()
@@ -174,7 +178,27 @@ def ubah_playlist(request, playlist_id):
 
 # R Play Song
 def play_song_main(request, song_id):
-    context = get_song_context(song_id)
+    songs = get_song_context(song_id)
+    email = request.COOKIES.get('user_email')
+
+    cursor = connection.cursor()
+    cursor.execute(
+        """
+        SELECT EXISTS(
+            SELECT 1
+            FROM premium
+            WHERE email = %s
+        )
+        """, [email]
+    )
+    if cursor.fetchone()[0]:
+        is_premium = True
+
+    context = {
+        'songs': songs,
+        'is_premium': is_premium
+    }    
+
     return render(request, "r_play_song/main.html", context)
 
 def get_song_context(song_id):
@@ -259,6 +283,7 @@ def play_button(request, song_id):
 
 def tambah_ke_playlist(request, song_id):
     songs = get_song_context(song_id)
+    email = request.COOKIES.get('user_email')
 
     cursor = connection.cursor()
     cursor.execute(
@@ -266,7 +291,8 @@ def tambah_ke_playlist(request, song_id):
         SET search_path to MARMUT;
         SELECT UP.judul, UP.id_playlist
         FROM USER_PLAYLIST UP
-        """
+        WHERE UP.email_pembuat = %s
+        """, [email]
     )
     playlists = cursor.fetchall()
 
@@ -276,7 +302,10 @@ def tambah_ke_playlist(request, song_id):
     }
     return render(request, 'r_play_song/form_tambah_playlist.html', context)
 
-def action_tambah(request, playlist_id, song_id):
+def action_tambah(request, song_id):
+
+    email = request.COOKIES.get('user_email')
+    playlist_id = request.POST.get('playlist_select')
 
     try:
         cursor = connection.cursor()
@@ -287,9 +316,25 @@ def action_tambah(request, playlist_id, song_id):
             VALUES (%s, %s)
             """, [playlist_id, song_id]
         )
-        return render(request, 'r_play_song/tambah_lagu_clear.html', context=get_song_context(song_id))
-    except Exception as e:
-        print(e)
+        songs = get_song_context(song_id)
+        cursor.execute(
+            """
+            SET search_path to MARMUT;
+            SELECT UP.judul
+            FROM USER_PLAYLIST UP
+            WHERE UP.email_pembuat = %s
+            AND UP.id_playlist = %s
+            """, [email, playlist_id]
+        )
+        playlists = cursor.fetchone()
+
+        context = {
+            'songs': songs,
+            'playlists': playlists
+        }
+        return render(request, 'r_play_song/tambah_lagu_clear.html', context)
+    except:
+        messages.info(request, f'Lagu sudah ada dalam playlist. Mohon dicoba lagi.')
 
     songs = get_song_context(song_id)
     cursor.execute(
@@ -297,7 +342,8 @@ def action_tambah(request, playlist_id, song_id):
         SET search_path to MARMUT;
         SELECT UP.judul, UP.id_playlist
         FROM USER_PLAYLIST UP
-        """
+        WHERE UP.email_pembuat = %s
+        """, [email]
     )
     playlists = cursor.fetchall()
 
@@ -308,24 +354,125 @@ def action_tambah(request, playlist_id, song_id):
 
     return render(request, 'r_play_song/form_tambah_playlist.html', context)
 
+def download_song(request, song_id):
+    email = request.COOKIES.get('user_email')
+    is_premium = request.COOKIES.get('is_premium')
+
+    cursor = connection.cursor()
+    try:
+        cursor.execute(
+            """
+            SET search_path to MARMUT;
+            INSERT INTO DOWNLOADED_SONG(id_song, email_downloader)
+            VALUES (%s, %s)
+            """, [song_id, email]
+        )
+
+        cursor.execute(
+            """
+            SET search_path to MARMUT;
+            SELECT k.judul
+            FROM SONG s
+            JOIN konten k ON s.id_konten = k.id
+            WHERE s.id_konten = %s
+            """, [song_id]
+        )
+        song_title = cursor.fetchone()
+
+        context = {
+            'song_id': song_id,
+            'song_title': song_title
+        }
+        
+        return render(request, 'r_play_song/download_lagu.html', context)
+    except Exception as e:
+        messages.info(request, f'Lagu sudah pernah didownload!')
+
     
+    return render(request, 'r_play_song/main.html', {'songs': get_song_context(song_id), 'is_premium': is_premium})
 
-def show_r_play_song_main(request):
-    return render(request, "r_play_song/main.html")
+def shuffle_play(request, playlist_id):
+    email = request.COOKIES.get('user_email')
+    waktu = datetime.datetime.now()
 
-def show_r_play_song_tambah_playlist(request):
-    return render(request, "r_play_song/form_tambah_playlist.html")
+    cursor = connection.cursor()
+    cursor.execute(
+        """
+        SET search_path to MARMUT;
+        SELECT email_pembuat, id_user_playlist
+        FROM USER_PLAYLIST
+        WHERE id_playlist = %s
+        """, [playlist_id]
+    )
+    result = cursor.fetchone()
+    email_pembuat = result[0]
+    id_user_playlist = result[1]
+    cursor.execute(
+        """
+        SET search_path to MARMUT;
+        INSERT INTO AKUN_PLAY_USER_PLAYLIST(email_pemain, id_user_playlist, email_pembuat, waktu)
+        VALUES (%s, %s, %s, %s)
+        """, [email, id_user_playlist, email_pembuat, waktu]
+    )
 
-def show_r_play_song_download_lagu(request):
-    return render(request, 'r_play_song/download_lagu.html')
+    cursor.execute(
+        """
+        SET search_path TO MARMUT;
+        SELECT ps.id_song
+        FROM USER_PLAYLIST up
+        JOIN PLAYLIST_SONG ps ON up.id_playlist = ps.id_playlist
+        WHERE up.id_playlist = %s
+        """,
+        [playlist_id]
+    )
+    song_ids = [row[0] for row in cursor.fetchall()]
 
-def show_r_play_song_tambah_lagu_clear(request):
-    return render(request, 'r_play_song/tambah_lagu_clear.html')
+    # Insert records into AKUN_PLAY_SONG for each song
+    for song_id in song_ids:
+        cursor.execute(
+            """
+            SET search_path TO MARMUT;
+            INSERT INTO AKUN_PLAY_SONG(email_pemain, id_song, waktu)
+            VALUES (%s, %s, %s)
+            """,
+            [email, song_id, waktu]
+        )
 
+    cursor.execute("""
+        SET search_path to MARMUT;
+        SELECT AKUN.nama, UP.judul, UP.deskripsi, UP.jumlah_lagu, UP.total_durasi, UP.tanggal_dibuat, UP.id_playlist
+        FROM USER_PLAYLIST UP
+        JOIN AKUN ON AKUN.email = UP.email_pembuat
+        WHERE id_playlist = %s
+    """, [playlist_id])
+    playlist = cursor.fetchone()
+    
+    playlist_details = {
+        'nama': playlist[0],
+        'judul': playlist[1],
+        'deskripsi': playlist[2],
+        'jumlah_lagu': playlist[3],
+        'total_durasi': playlist[4],
+        'tanggal_dibuat': playlist[5],
+        'id': playlist[6]
+    }
 
+    cursor.execute("""
+        SET search_path to MARMUT;
+        SELECT konten.judul AS judul, akun.nama AS oleh, konten.durasi AS durasi, konten.id
+        FROM USER_PLAYLIST up
+        JOIN PLAYLIST_SONG ps ON up.id_playlist = ps.id_playlist
+        JOIN SONG s ON ps.id_song = s.id_konten
+        JOIN KONTEN konten ON s.id_konten = konten.id
+        JOIN ARTIST artis ON s.id_artist = artis.id
+        JOIN AKUN akun ON artis.email_akun = akun.email
+        WHERE up.id_playlist = %s
+    """, [playlist_id])
+    songs = cursor.fetchall()
 
+    context = {
+        'songs': songs,
+        'playlist': playlist_details   
+    }
 
-
-# R Play Playlist
-def show_r_play_playlist(request):
-    return render(request, 'r_play_playlist/main.html')
+    return render(request, 'crud_kelola_playlist/detail.html', context)

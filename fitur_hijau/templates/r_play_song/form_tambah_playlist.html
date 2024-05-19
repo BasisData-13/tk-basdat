@@ -14,7 +14,7 @@
                 <tr> 
                     <th colspan="5" class="text-center border-b border-gray-300 bg-gray-100 px-4 py-2">
                         ADD SONG TO USER PLAYLIST
-                        <form method="POST" action="{% url 'fitur_hijau:action_tambah' playlist_id=playlists.1.1 song_id=songs.id %}">
+                        <form method="POST" action="{% url 'fitur_hijau:action_tambah' song_id=songs.id %}">
                             {% csrf_token %}
                             <div class="text-left">
                                 <p>Judul: {{ songs.judul }}</p>
@@ -23,12 +23,12 @@
                                     <label class="block text-gray-700 font-bold mb-2" for="albumLabel">Playlist:</label>
                                     <select name="playlist_select" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="albumLabel">
                                         {% for playlist in playlists %}
-                                            <option value="{{ playlist.0 }}">{{ playlist.0 }}</option>
+                                            <option value="{{ playlist.1 }}">{{ playlist.0 }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
                             </div>
-                            <div class="grid grid-row-2 gap-2 mt-2">
+                            <div class="grid grid-row-2 gap-2 mt-2"> 
                                 <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
                                     TAMBAH
                                 </button>
@@ -39,10 +39,19 @@
                                 </a>
                             </div>
                         </form>
+
+                        
                     </th>
                 </tr>
             </thead>
         </table>
+        {% if messages %}
+            <ul class="text-white mt-1">
+                {% for message in messages %}
+                    <li><strong>{{ message }}</strong></li>
+                {% endfor %}
+            </ul>
+        {% endif %}    
     </div>
 </body>
 {% endblock content %}

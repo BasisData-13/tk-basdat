@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-(wgj9@@4s2qpayydahj&1l_0k+_q6&t0k-6*^ds#+gp1^ee=@(
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['https://web-production-0bd3.up.railway.app']
+CSRF_TRUSTED_ORIGINS = ['https://web-production-d19fb.up.railway.app']
 
 
 # Application definition
@@ -91,10 +91,6 @@ WSGI_APPLICATION = 'marmut.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
-env = environ.Env()
-environ.Env.read_env()
-
 # Your secret key
 SECRET_KEY = "SECRET_KEY"
 DATABASES = {
@@ -143,9 +139,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
+# The absolute path to the directory where collectstatic will collect static files for deployment.
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# The URL to use when referring to static files (where they will be served from)
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATICFILES_STORAGE="whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

@@ -15,15 +15,15 @@
             <thead>
                 <tr> 
                     <th colspan="5" class="text-center border-b border-gray-300 bg-gray-100 px-4 py-2">
-                        Berhasil mengunduh Lagu dengan judul "Song1"!
+                        Berhasil mengunduh Lagu dengan judul "{{ song_title.0 }}"!
                         <div class="grid grid-row-2 gap-2 mt-2">
 
-                            <a>
+                            <a href="{% url 'theme:rd_downloaded_songs_main' %}">
                                 <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
                                     KE DAFTAR DOWNLOAD
                                 </button>
                             </a>
-                            <a href="{% url 'theme:r_play_song_main' %}">
+                            <a href="{% url 'fitur_hijau:play_song_main' song_id=song_id %}">
                                 <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
                                     KEMBALI
                                 </button>

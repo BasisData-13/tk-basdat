@@ -18,6 +18,7 @@ def login_user(request):
         is_artist = False
         is_songwriter = False
         is_podcaster = False
+        is_premium = False
 
         with connection.cursor() as cursor:
             cursor.execute("SET search_path to MARMUT;")
@@ -75,7 +76,20 @@ def login_user(request):
                     """, [email]
                 )
                 if cursor.fetchone()[0]:
-                    is_podcaster = True                
+                    is_podcaster = True
+                
+                # Check if account is premium
+                cursor.execute(
+                    """
+                    SELECT EXISTS(
+                        SELECT 1
+                        FROM premium
+                        WHERE email = %s
+                    )
+                    """, [email]
+                )
+                if cursor.fetchone()[0]:
+                    is_premium = True                
 
                 response = HttpResponseRedirect(reverse("theme:landing_page"))
                 response.set_cookie('last_login', str(datetime.datetime.now()))
@@ -85,6 +99,8 @@ def login_user(request):
                 response.set_cookie('is_artist', is_artist)
                 response.set_cookie('is_songwriter', is_songwriter)
                 response.set_cookie('is_podcaster', is_podcaster)
+                response.set_cookie('is_premium', is_premium)
+                response.set_cookie('is_label', False)
                 return response
             else:
                 # Check LABEL table
@@ -109,11 +125,164 @@ def login_user(request):
                     response.set_cookie('is_artist', False)
                     response.set_cookie('is_songwriter', False)
                     response.set_cookie('is_podcaster', False)
+                    response.set_cookie('is_premium', False)
+                    response.set_cookie('is_label', True)
                     return response
 
             messages.info(request, 'Sorry, incorrect email or password. Please try again.')
 
     return render(request, 'authentication/login.html', context)
+
+
+# Dashboard
+def show_dashboard(request):
+    cursor = connection.cursor()
+    is_label = request.COOKIES.get('is_label')
+    is_artist = request.COOKIES.get('is_artist')
+    is_songwriter = request.COOKIES.get('is_songwriter')
+    is_podcaster = request.COOKIES.get('is_podcaster')
+    email = request.COOKIES.get('user_email')
+
+    if is_label == 'True':
+        cursor.execute(
+            """
+            SET search_path to MARMUT;
+            SELECT kontak
+            FROM LABEL
+            WHERE email = %s
+            """, [email]
+        )
+        kontak = cursor.fetchone()
+
+        cursor.execute(
+            """
+            SET search_path to MARMUT;
+            SELECT AL.judul
+            FROM LABEL L
+            JOIN ALBUM AL ON AL.id_label = L.id
+            WHERE L.email = %s
+            """, [email]
+        )
+        albums = cursor.fetchall()
+
+        cursor.execute(
+            """
+            SET search_path to MARMUT;
+            SELECT nama, email
+            FROM LABEL
+            WHERE email = %s
+            """, [email]
+        )
+        pengguna = cursor.fetchone()
+
+        print(pengguna)
+
+        context = {
+            'is_pengguna': False,
+            'is_label': True,
+            'is_artist': False,
+            'is_songwriter': False,
+            'is_podcaster': False,
+
+            'kontak': kontak,
+            'albums': albums,
+            'pengguna': pengguna
+        }
+        return render(request, 'dashboard.html', context)
+    else:
+        cursor.execute(
+            """
+            SET search_path to MARMUT;
+            SELECT nama, email, kota_asal, gender, tempat_lahir, tanggal_lahir
+            FROM AKUN
+            WHERE email = %s
+            """, [email]
+        )
+        pengguna = cursor.fetchone()
+
+        cursor.execute(
+            """
+            SELECT EXISTS(
+                SELECT 1
+                FROM AKUN
+                JOIN PREMIUM ON PREMIUM.email = AKUN.email
+                WHERE AKUN.email = %s
+            )
+            """, [email]
+        )
+        status_langganan = cursor.fetchone()
+
+        roles = []
+        if is_songwriter == 'True' or is_artist == 'True':
+            cursor.execute(
+                """
+                SET search_path to MARMUT;
+                SELECT K.judul
+                FROM ARTIST AR
+                JOIN SONGWRITER SW ON AR.email_akun = SW.email_akun
+                JOIN SONG S ON S.id_artist = AR.id
+                JOIN KONTEN K ON S.id_konten = K.id
+                WHERE AR.email_akun = %s
+                """, [email]
+            )
+            songs = cursor.fetchall()
+
+            if is_songwriter == 'True':
+                roles.append('Songwriter')
+            
+            if is_artist == 'True':
+                roles.append('Artist')
+        else:
+            songs = None
+
+        if is_podcaster == 'True':
+            cursor.execute(
+                """
+                SET search_path to MARMUT;
+                SELECT K.judul
+                FROM PODCASTER PR
+                JOIN PODCAST P ON PR.email = P.email_podcaster
+                JOIN KONTEN K ON K.id = P.id_konten
+                WHERE PR.email = %s
+                """, [email]
+            )
+            podcast = cursor.fetchall()
+
+            roles.append('Podcaster')
+        else:
+            podcast = None
+
+        if is_podcaster == 'False' or is_artist == 'False' or is_songwriter == 'False':
+            cursor.execute(
+                """
+                SET search_path to MARMUT;
+                SELECT judul
+                FROM USER_PLAYLIST
+                WHERE email_pembuat = %s
+                """, [email]
+            )
+            playlists = cursor.fetchall()
+        else:
+            playlists = None
+
+    print(is_artist, is_songwriter, is_podcaster)
+    print(type(is_artist))
+    context = {
+        'is_label': False,
+        'is_pengguna': True,
+        'is_artist': is_artist,
+        'is_songwriter': is_songwriter,
+        'is_podcaster': is_podcaster,
+
+        'pengguna': pengguna,
+        'status_langganan': status_langganan,
+        'songs': songs,
+        'podcasts': podcast,
+        'playlists': playlists,
+        'roles': ', '.join(roles)
+    }
+    print(context)
+    return render(request, 'dashboard.html', context)
 
 
 def register_pengguna(request):
@@ -272,10 +441,6 @@ def show_rd_downloaded_songs_main(request):
 
 def show_rd_downloaded_songs_berhasil_hapus(request):
     return render(request, 'rd_downloaded_songs/berhasil_hapus.html')
-
-# Dashboard
-def show_dashboard(request):
-    return render(request, 'dashboard.html')
 
 # fitur biru
 def show_r_play_podcast(request, podcast_id):

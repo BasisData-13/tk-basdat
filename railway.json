@@ -1,23 +1,20 @@
 {
-    "$schema": "https://schema.up.railway.app/railway.schema.json",
+    "$schema": "https://railway.app/railway.schema.json",
     "build": {
       "builder": "NIXPACKS",
       "nixpacksPlan": {
-        "providers": ["python"],
-        "phases": {
-          "setup": {
-            "nixPkgs": ["...", "nodejs"]
-          },
-          "npm:install": {
-            "dependsOn": ["setup"],
-            "cmds": ["npm ci"]
+          "providers": ["python"],
+          "phases": {
+              "setup": {
+                  "nixPkgs": ["...", "nodejs"]
+              }
           }
-        }
-      }
+      },
+      "buildCommand": "npm ci"
     },
     "deploy": {
-      "startCommand": "python -m pip install django-tailwind && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn marmut.wsgi && python manage.py tailwind install && python manage.py tailwind start && python manage.py runserver",
+      "startCommand": "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn marmut.wsgi",
       "restartPolicyType": "ON_FAILURE",
       "restartPolicyMaxRetries": 10
     }
-}
+  }

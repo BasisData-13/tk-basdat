@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+    <title>Song Details - {{ song.title }}</title>
+{% endblock meta %}
+
+{% block content %}
+<body class="bg-gray-100">
+    <div class="container mx-auto p-5">
+        <div class="bg-white shadow rounded-lg p-6 m-3">
+            <h2 class="text-2xl font-bold mb-4">Song Details</h2>
+            <p><strong>Title:</strong> {{ song_detail.0 }}</p>
+            <p><strong>Artist:</strong> {{ song_detail.1 }}</p>
+            <p><strong>Durasi</strong> {{ song_detail.2 }}</p>
+            <p><strong>Total Plays:</strong> {{ song_detail.3 }}</p>
+            <p><strong>Total Download:</strong> {{ song_detail.4 }}</p>
+            <div class="flex mt-4">
+                <a href="/charts/">
+                    <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                        Go Back
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock content %}

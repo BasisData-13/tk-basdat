@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.db import connection
-
+from fitur_merah.views import get_artist_id
     
 
 # AUTHENTICATION
@@ -214,27 +214,40 @@ def show_dashboard(request):
 
         roles = []
         if is_songwriter == 'True' or is_artist == 'True':
-            cursor.execute(
-                """
-                SET search_path to MARMUT;
-                SELECT K.judul
-                FROM ARTIST AR
-                JOIN SONGWRITER SW ON AR.email_akun = SW.email_akun
-                JOIN SONG S ON S.id_artist = AR.id
-                JOIN KONTEN K ON S.id_konten = K.id
-                WHERE AR.email_akun = %s
-                """, [email]
-            )
-            songs = cursor.fetchall()
-
+            songs = []
+            
             if is_songwriter == 'True':
                 roles.append('Songwriter')
+                cursor.execute(
+                    """
+                    SET search_path to MARMUT;
+                    SELECT K.judul
+                    FROM SONG
+                    JOIN KONTEN K ON SONG.id_konten = K.id
+                    JOIN SONGWRITER_WRITE_SONG SWS ON SONG.id_konten = SWS.id_song
+                    JOIN SONGWRITER SW ON SWS.id_songwriter = SW.id
+                    JOIN AKUN A ON SW.email_akun = A.email
+                    WHERE A.email = %s
+                    """, [email]
+                )
+                songs += cursor.fetchall()
             
             if is_artist == 'True':
                 roles.append('Artist')
+                cursor.execute(
+                    """
+                    SET search_path to MARMUT;
+                    SELECT K.judul
+                    FROM ARTIST A
+                    JOIN SONG S ON A.id = S.id_artist
+                    JOIN KONTEN K ON S.id_konten = K.id
+                    WHERE A.email_akun = %s
+                    """, [email]
+                )
+                songs += cursor.fetchall() 
         else:
             songs = None
-
+            
         if is_podcaster == 'True':
             cursor.execute(
                 """

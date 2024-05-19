@@ -265,8 +265,7 @@ def show_dashboard(request):
         else:
             playlists = None
 
-    print(is_artist, is_songwriter, is_podcaster)
-    print(type(is_artist))
+    print(roles)
     context = {
         'is_label': False,
         'is_pengguna': True,

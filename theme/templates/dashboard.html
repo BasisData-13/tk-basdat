@@ -54,35 +54,36 @@
                 <p class="text-white">Belum Memiliki Podcast</p>
             {% endif %}
         </div>
-    {% endif %}
-    {% if is_pengguna %}
-        <br>
-        <div class="mt-8">
-            <h2 class="text-xl text-white font-bold mb-4">Daftar Playlist</h2>
-            {% if playlists %}
-                <ul class="text-white">
-                    {% for playlist in playlists %}
-                        <li>{{ playlist.0 }}</li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p class="text-white">Belum Memiliki Playlist</p>
-            {% endif %}
-        </div>
-    {% elif is_label %}
-        <br>
-        <div class="mt-8">
-            <h2 class="text-xl text-white font-bold mb-4">Daftar Album</h2>
-            {% if albums %}
-                <ul class="text-white">
-                    {% for album in albums %}
-                        <li>{{ album.0 }}</li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p class="text-white">Belum Memproduksi Album</p>
-            {% endif %}
-        </div>
+    {% else %}
+        {% if is_pengguna %}
+            <br>
+            <div class="mt-8">
+                <h2 class="text-xl text-white font-bold mb-4">Daftar Playlist</h2>
+                {% if playlists %}
+                    <ul class="text-white">
+                        {% for playlist in playlists %}
+                            <li>{{ playlist.0 }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-white">Belum Memiliki Playlist</p>
+                {% endif %}
+            </div>
+        {% elif is_label %}
+            <br>
+            <div class="mt-8">
+                <h2 class="text-xl text-white font-bold mb-4">Daftar Album</h2>
+                {% if albums %}
+                    <ul class="text-white">
+                        {% for album in albums %}
+                            <li>{{ album.0 }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-white">Belum Memproduksi Album</p>
+                {% endif %}
+            </div>
+        {% endif %}
     {% endif %}
 </div>
 {% endblock %}

@@ -167,11 +167,13 @@ def show_dashboard(request):
             """
             SET search_path to MARMUT;
             SELECT nama, email
-            FROM AKUN
+            FROM LABEL
             WHERE email = %s
             """, [email]
         )
         pengguna = cursor.fetchone()
+
+        print(pengguna)
 
         context = {
             'is_pengguna': False,
@@ -181,7 +183,8 @@ def show_dashboard(request):
             'is_podcaster': False,
 
             'kontak': kontak,
-            'albums': albums
+            'albums': albums,
+            'pengguna': pengguna
         }
         return render(request, 'dashboard.html', context)
     else:

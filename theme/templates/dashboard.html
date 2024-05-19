@@ -2,10 +2,11 @@
 
 {% block content %}
 <div class="container mx-auto my-8">
-    <h1 class="text-3xl text-white font-bold mb-4">Dashboard</h1>
-
+    <h1 class="text-4xl text-white text-center font-bold mb-4">Dashboard</h1>
+    <br>
     <div class="bg-white shadow-md rounded-lg p-6">
-        <h2 class="text-2xl text-white font-bold mb-2">Profil Pengguna</h2>
+        <h2 class="text-2xl text-black font-bold mb-2">Profil Pengguna</h2>
+        <hr><br>
         <p class="mb-2"><strong>Nama:</strong> {{ pengguna.0 }}</p>
         <p class="mb-2"><strong>Email:</strong> {{ pengguna.1 }}</p>
         {% if is_pengguna %}
@@ -23,11 +24,11 @@
             <p class="mb-2"><strong>Kontak:</strong> {{ kontak.0 }}</p>
         {% endif %}
     </div>
-
     
     {% if is_artist == 'True' or is_songwriter == 'True' %}
+        <br>
         <div class="mt-8">
-            <h2 class="text-2xl text-white font-bold mb-4">Daftar Lagu</h2>
+            <h2 class="text-xl text-white font-bold mb-4">Daftar Lagu</h2>
             {% if songs %}
                 <ul class="text-white">
                     {% for song in songs %}
@@ -38,9 +39,11 @@
                 <p class="text-white">Belum Memiliki Lagu</p>
             {% endif %}
         </div>
-    {% elif is_podcaster == 'True' %}
+    {% endif %}
+    {% if is_podcaster == 'True' %}
+        <br>
         <div class="mt-8">
-            <h2 class="text-2xl text-white font-bold mb-4">Daftar Podcast</h2>
+            <h2 class="text-xl text-white font-bold mb-4">Daftar Podcast</h2>
             {% if podcasts %}
                 <ul class="text-white">
                     {% for podcast in podcasts %}
@@ -51,9 +54,11 @@
                 <p class="text-white">Belum Memiliki Podcast</p>
             {% endif %}
         </div>
-    {% elif is_pengguna %}
+    {% endif %}
+    {% if is_pengguna %}
+        <br>
         <div class="mt-8">
-            <h2 class="text-2xl text-white font-bold mb-4">Daftar Playlist</h2>
+            <h2 class="text-xl text-white font-bold mb-4">Daftar Playlist</h2>
             {% if playlists %}
                 <ul class="text-white">
                     {% for playlist in playlists %}
@@ -65,8 +70,9 @@
             {% endif %}
         </div>
     {% elif is_label %}
+        <br>
         <div class="mt-8">
-            <h2 class="text-2xl text-white font-bold mb-4">Daftar Album</h2>
+            <h2 class="text-xl text-white font-bold mb-4">Daftar Album</h2>
             {% if albums %}
                 <ul class="text-white">
                     {% for album in albums %}

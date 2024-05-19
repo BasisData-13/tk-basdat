@@ -13,7 +13,7 @@
         <div class="flex flex-wrap justify-around">
             <div class="bg-white p-6 rounded-lg shadow-lg m-3 w-full md:w-5/12">
                 <h2 class="text-xl font-bold mb-4">CREATE PODCAST</h2>
-                <form action="{% url 'create_podcast' %}" method="post" class="flex flex-wrap">
+                <form action="/create_podcast/" method="post" class="flex flex-wrap">
                     {% csrf_token %}
                     <div class="form-group w-full mb-4">
                         <label for="podcastTitle" class="font-bold">Judul:</label>
@@ -50,13 +50,13 @@
                             <td class="border px-4 py-2">{{ podcast.3 }}</td>
                             <td class="border px-4 py-2">{{ podcast.2 }} menit</td>
                             <td class="border px-4 py-2">
-                                <a href="{% url 'show_podcast_detail' podcast.0 %}">
+                                <a href = "/podcast_detail/{{ podcast.0}}">
                                     <button class="bg-green-500 hover:bg-green-700 text-white py-1 px-2 rounded">Lihat Daftar Episode</button>
                                 </a>
-                                <a href="{% url 'create_episode' podcast.0 %}">
+                                <a href="/create_episode/{{podcast.0}}">
                                     <button class="bg-green-500 hover:bg-green-700 text-white py-1 px-2 rounded">Tambah Episode</button>
                                 </a>
-                                <a href="{% url 'delete_podcast' podcast.0 %}" onclick="return confirm('Are you sure you want to delete this podcast?');">
+                                <a href="/delete_podcast/{{podcast.0}}" onclick="return confirm('Are you sure you want to delete this podcast?');">
                                     <button class="bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded">Hapus</button>
                                 </a>
                             </td>

@@ -16,7 +16,7 @@
                         <div class="text-left text-bold">
                             Tipe: {{ chart_type }}
                         </div>
-                        <a href="{% url 'ru_melihat_chart' %}">
+                        <a href="/ru_melihat_chart/">
                             <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-[10px]" type="button">
                                 KEMBALI
                             </button>
@@ -44,7 +44,7 @@
                     <td class="border border-gray-300 px-4 py-2">{{ song.2|date:"Y-m-d" }}</td>
                     <td class="border border-gray-300 px-4 py-2">{{ song.3 }}</td>
                     <td class="border border-gray-300 px-4 py-2">
-                        <a href="{% url 'song_detail' song.id %}">
+                        <a href="/get_song_chart/{{song.4}}">
                             <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
                                 Lihat
                             </button>

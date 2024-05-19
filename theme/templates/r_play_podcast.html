@@ -11,12 +11,12 @@
     <div class="max-w-4xl mx-auto px-4 py-8">
         <div class="bg-white shadow rounded-lg p-6 mb-6">
             <h2 class="text-2xl font-bold mb-4">PODCAST DETAIL</h2>
-            <p><strong>Judul:</strong> {{ podcast.judul }}</p>
-            <p><strong>Genre(s):</strong> {% for genre in podcast.genres %}{{ genre }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
-            <p><strong>Podcaster:</strong> {{ podcast.podcaster }}</p>
-            <p><strong>Total Durasi:</strong> {{ podcast.durasi_total|duration_format }}</p>
-            <p><strong>Tanggal Rilis:</strong> {{ podcast.tanggal_rilis|date:"Y-m-d" }}</p>
-            <p><strong>Tahun:</strong> {{ podcast.tahun }}</p>
+            <p><strong>Judul:</strong> {{ podcast.0 }}</p>
+            <p><strong>Genre(s):</strong> {% for genre in podcast.1 %}{{ genre }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+            <p><strong>Podcaster:</strong> {{ podcast.2 }}</p>
+            <p><strong>Total Durasi:</strong> {{ podcast.3 }}</p>
+            <p><strong>Tanggal Rilis:</strong> {{ podcast.4|date:"Y-m-d" }}</p>
+            <p><strong>Tahun:</strong> {{ podcast.5 }}</p>
 
             <div class="flex justify-center mt-4">
                 <a href="{% url 'theme:show_main' %}">
@@ -29,7 +29,7 @@
 
         <div class="bg-white shadow rounded-lg p-6">
             <h3 class="text-xl font-bold mb-4">DAFTAR EPISODE</h3>
-            {% if episodes %}
+            {% if episodes.0 %}
             <table class="min-w-full border-collapse">
                 <thead>
                     <tr>
@@ -42,10 +42,10 @@
                 <tbody>
                     {% for episode in episodes %}
                     <tr class="bg-gray-100">
-                        <td class="px-4 py-4 border-b border-gray-300">{{ episode.judul }}</td>
-                        <td class="px-4 py-4 border-b border-gray-300">{{ episode.deskripsi }}</td>
-                        <td class="px-4 py-4 border-b border-gray-300">{{ episode.durasi|duration_format }}</td>
-                        <td class="px-4 py-4 border-b border-gray-300">{{ episode.tanggal|date:"Y-m-d" }}</td>
+                        <td class="px-4 py-4 border-b border-gray-300">{{ episode.0 }}</td>
+                        <td class="px-4 py-4 border-b border-gray-300">{{ episode.7 }}</td>
+                        <td class="px-4 py-4 border-b border-gray-300">{{ episode.8 }}</td>
+                        <td class="px-4 py-4 border-b border-gray-300">{{ episode.9|date:"Y-m-d" }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

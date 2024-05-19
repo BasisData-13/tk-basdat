@@ -1,47 +1,82 @@
 {% extends 'base.html' %}
-{% load static %}
-
-
-{% block meta %}
-    <title>Dashboard</title>
-{% endblock meta %}
 
 {% block content %}
+<div class="container mx-auto my-8">
+    <h1 class="text-3xl text-white font-bold mb-4">Dashboard</h1>
 
-    <body class="bg-gray-100">
-        <!-- List Album Table -->
-        <div class="container mx-auto my-8 flex items-center justify-center flex-col">
-            <table class="min-w-full border border-gray-300">
-                <thead>
-                    <tr>
-                        <th colspan="8" class="text-center border-b border-gray-300 bg-gray-200 px-4 py-2">DASHBOARD</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="bg-gray-600 text-center">
-                        <td class="border border-gray-300 font-bold text-white px-4 py-2">Nama</td>
-                        <td class="border border-gray-300 font-bold text-white px-4 py-2">Email</td>
-                        <td class="border border-gray-300 font-bold text-white px-4 py-2">Kontak</td>
-                        <td class="border border-gray-300 font-bold text-white px-4 py-2">Kota Asal</td>
-                        <td class="border border-gray-300 font-bold text-white px-4 py-2">Gender</td>
-                        <td class="border border-gray-300 font-bold text-white px-4 py-2">Tempat Lahir</td>
-                        <td class="border border-gray-300 font-bold text-white px-4 py-2">Tanggal Lahir</td>
-                        <td class="border border-gray-300 font-bold text-white px-4 py-2">Role</td>
-                        
-                    </tr>
-                    <tr class="bg-gray-600">
-                        <td class="border border-gray-300 px-4 py-2">Jarjit Singh</td>
-                        <td class="border border-gray-300 px-4 py-2">jarjitsing@gmail.com</td>
-                        <td class="border border-gray-300 px-4 py-2">347013748123</td>
-                        <td class="border border-gray-300 px-4 py-2">Jakarta</td>
-                        <td class="border border-gray-300 px-4 py-2">Laki-laki</td>
-                        <td class="border border-gray-300 px-4 py-2">India</td>
-                        <td class="border border-gray-300 px-4 py-2">25/12/2004</td>
-                        <td class="border border-gray-300 px-4 py-2">Pengguna</td>
-                    </tr>
-                    <!-- More Album Rows -->
-                </tbody>
-            </table>
+    <div class="bg-white shadow-md rounded-lg p-6">
+        <h2 class="text-2xl text-white font-bold mb-2">Profil Pengguna</h2>
+        <p class="mb-2"><strong>Nama:</strong> {{ pengguna.0 }}</p>
+        <p class="mb-2"><strong>Email:</strong> {{ pengguna.1 }}</p>
+        {% if is_pengguna %}
+            <p class="mb-2"><strong>Status Langganan:</strong> {{ status_langganan.0 }}</p>
+            <p class="mb-2"><strong>Kota Asal:</strong> {{ pengguna.2 }}</p>
+            {% if pengguna.3 == 0 %}
+                <p class="mb-2"><strong>Gender:</strong> Perempuan</p>
+            {% else %}
+                <p class="mb-2"><strong>Gender:</strong> Laki-laki</p>
+            {% endif %}
+            <p class="mb-2"><strong>Tempat Lahir:</strong> {{ pengguna.4 }}</p>
+            <p class="mb-2"><strong>Tanggal Lahir:</strong> {{ pengguna.5 }}</p>
+            <p class="mb-2"><strong>Role:</strong> {{ roles }}</p>
+        {% elif is_label %}
+            <p class="mb-2"><strong>Kontak:</strong> {{ kontak.0 }}</p>
+        {% endif %}
+    </div>
+
+    
+    {% if is_artist == 'True' or is_songwriter == 'True' %}
+        <div class="mt-8">
+            <h2 class="text-2xl text-white font-bold mb-4">Daftar Lagu</h2>
+            {% if songs %}
+                <ul class="text-white">
+                    {% for song in songs %}
+                        <li>{{ song.0 }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-white">Belum Memiliki Lagu</p>
+            {% endif %}
         </div>
-    </body>
-{% endblock content %}
+    {% elif is_podcaster == 'True' %}
+        <div class="mt-8">
+            <h2 class="text-2xl text-white font-bold mb-4">Daftar Podcast</h2>
+            {% if podcasts %}
+                <ul class="text-white">
+                    {% for podcast in podcasts %}
+                        <li>{{ podcast.0 }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-white">Belum Memiliki Podcast</p>
+            {% endif %}
+        </div>
+    {% elif is_pengguna %}
+        <div class="mt-8">
+            <h2 class="text-2xl text-white font-bold mb-4">Daftar Playlist</h2>
+            {% if playlists %}
+                <ul class="text-white">
+                    {% for playlist in playlists %}
+                        <li>{{ playlist.0 }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-white">Belum Memiliki Playlist</p>
+            {% endif %}
+        </div>
+    {% elif is_label %}
+        <div class="mt-8">
+            <h2 class="text-2xl text-white font-bold mb-4">Daftar Album</h2>
+            {% if albums %}
+                <ul class="text-white">
+                    {% for album in albums %}
+                        <li>{{ album.0 }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-white">Belum Memproduksi Album</p>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
